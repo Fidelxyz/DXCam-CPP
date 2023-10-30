@@ -18,15 +18,11 @@ class Output {
 public:
     explicit Output(IDXGIOutput1 *output);
 
-    [[nodiscard]] HMONITOR get_hmonitor() const;
-
     [[nodiscard]] OutputInfo get_info() const;
     [[nodiscard]] std::wstring get_device_name() const;
     void get_resolution(LONG *width, LONG *height) const;
     void get_surface_size(LONG *width, LONG *height) const;
     [[nodiscard]] int get_rotation_angle() const;
-
-    [[nodiscard]] bool is_attached_to_desktop() const;
 
     void update_desc();
 

@@ -106,7 +106,7 @@ std::vector<DXCam::DeviceInfo> devices_info = DXCam::get_devices_info();
 std::vector<std::vector<DXCam::OutputInfo>> outputs_info = DXCam::get_outputs_info();
 ```
 
-Here is the defination of `DeviceInfo` and `OutputInfo`:
+Here is the declaration of `DeviceInfo` and `OutputInfo`:
 
 ```cpp
 struct DXCam::DeviceInfo {

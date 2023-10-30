@@ -35,6 +35,6 @@ bool Duplicator::update_frame() {
     return true;
 }
 
-void Duplicator::release_frame() { this->duplicator->ReleaseFrame(); }
+void Duplicator::release_frame() const { this->duplicator->ReleaseFrame(); }
 
 }  // namespace DXCam

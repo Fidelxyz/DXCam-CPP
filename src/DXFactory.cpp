@@ -14,7 +14,7 @@ DXFactory::DXFactory() {
     const auto p_adapters = enum_dxgi_adapters();
     for (const auto &p_adapter: p_adapters) {
         auto device = Device(p_adapter);
-        const auto p_outputs = enum_dxgi_outputs(p_adapter);
+        const auto p_outputs = device.enum_outputs();
         if (!p_outputs.empty()) {
             this->devices.emplace_back(device);
             this->outputs.emplace_back(p_outputs.begin(), p_outputs.end());

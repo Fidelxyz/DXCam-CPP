@@ -21,11 +21,13 @@ Device::Device(IDXGIAdapter1 *const adapter) : adapter(adapter), desc() {
     this->device->GetImmediateContext(&this->im_context);
 }
 
-std::vector<IDXGIOutput *> Device::enum_outputs() const {
-    std::vector<IDXGIOutput *> p_outputs;
-    IDXGIOutput *p_output;
+std::vector<IDXGIOutput1 *> Device::enum_outputs() const {
+    std::vector<IDXGIOutput1 *> p_outputs;
+    IDXGIOutput1 *p_output;
     for (size_t i = 0;
-         this->adapter->EnumOutputs(i, &p_output) != DXGI_ERROR_NOT_FOUND;
+         this->adapter->EnumOutputs(
+                 i, reinterpret_cast<IDXGIOutput **>(&p_output)) !=
+         DXGI_ERROR_NOT_FOUND;
          i++) {
         p_outputs.emplace_back(p_output);
     }

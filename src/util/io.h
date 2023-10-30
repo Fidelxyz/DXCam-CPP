@@ -19,11 +19,7 @@ namespace DXCam {
 
 std::vector<IDXGIAdapter1 *> enum_dxgi_adapters();
 
-std::vector<IDXGIOutput1 *> enum_dxgi_outputs(IDXGIAdapter1 *adapter);
-
 OutputMetadata get_output_metadata();
-
-bool get_monitor_name_by_handle(const HMONITOR &hmonitor);
 
 }  // namespace DXCam
 

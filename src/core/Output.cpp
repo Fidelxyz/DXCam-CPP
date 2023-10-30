@@ -14,8 +14,6 @@ Output::Output(IDXGIOutput1 *const output) : output(output), desc() {
 
 void Output::update_desc() { this->output->GetDesc(&this->desc); }
 
-HMONITOR Output::get_hmonitor() const { return this->desc.Monitor; }
-
 OutputInfo Output::get_info() const {
     LONG width, height;
     this->get_resolution(&width, &height);
@@ -44,10 +42,6 @@ void Output::get_surface_size(LONG *width, LONG *height) const {
 
 int Output::get_rotation_angle() const {
     return ROTATION_MAPPING[this->desc.Rotation];
-}
-
-bool Output::is_attached_to_desktop() const {
-    return this->desc.AttachedToDesktop;
 }
 
 }  // namespace DXCam

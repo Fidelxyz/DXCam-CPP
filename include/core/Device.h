@@ -21,7 +21,7 @@ public:
     explicit Device(IDXGIAdapter1 *adapter);
 
     [[nodiscard]] DeviceInfo get_info() const;
-    [[nodiscard]] std::vector<IDXGIOutput *> enum_outputs() const;
+    [[nodiscard]] std::vector<IDXGIOutput1 *> enum_outputs() const;
 
     IDXGIAdapter1 *adapter;
     ID3D11Device *device = nullptr;

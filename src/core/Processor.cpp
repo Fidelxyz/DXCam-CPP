@@ -31,22 +31,13 @@ cv::Mat Processor::process_cvt_color(const cv::Mat &image) {
 cv::Mat Processor::process(const DXGI_MAPPED_RECT &rect, const int width,
                            const int height, const Region &region,
                            const int rotation_angle) {
-    auto pitch = rect.Pitch;
+    const auto pitch = rect.Pitch / 4;
 
-    int size = 0;
-    if (rotation_angle == 0 || rotation_angle == 180) {
-        size = pitch * height;
-    } else {
-        size = pitch * width;
-    }
-
-    auto buffer = rect.pBits;
-    pitch /= 4;
     cv::Mat image;
     if (rotation_angle == 0 || rotation_angle == 180) {
-        image = cv::Mat(height, pitch, CV_8UC4, buffer);
+        image = cv::Mat(height, pitch, CV_8UC4, rect.pBits);
     } else {
-        image = cv::Mat(width, pitch, CV_8UC4, buffer);
+        image = cv::Mat(width, pitch, CV_8UC4, rect.pBits);
     }
 
     image = this->process_cvt_color(image);
@@ -66,18 +57,11 @@ cv::Mat Processor::process(const DXGI_MAPPED_RECT &rect, const int width,
             break;
     }
 
-    if ((rotation_angle == 0 || rotation_angle == 180) && pitch != width ||
-        (rotation_angle == 90 || rotation_angle == 270) && pitch != height) {
-        image = image(cv::Range(0, height), cv::Range(0, width));
-    }
-
     if (region.right - region.left != width ||
         region.bottom - region.top != height) {
         image = image(cv::Range(region.top, region.bottom),
                       cv::Range(region.left, region.right));
     }
-
-    // TODO Optimization
 
     return image;
 }

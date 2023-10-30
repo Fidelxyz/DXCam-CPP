@@ -19,8 +19,8 @@ public:
     StageSurface(Output *output, Device *device);
     ~StageSurface();
 
-    DXGI_MAPPED_RECT map();
-    void unmap();
+    [[nodiscard]] DXGI_MAPPED_RECT map() const;
+    void unmap() const;
 
     LONG width = 0;
     LONG height = 0;

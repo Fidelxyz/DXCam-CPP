@@ -16,7 +16,7 @@ public:
     ~Duplicator();
 
     bool update_frame();
-    void release_frame();
+    void release_frame() const;
 
     ID3D11Texture2D *texture = nullptr;
     IDXGIOutputDuplication *duplicator = nullptr;

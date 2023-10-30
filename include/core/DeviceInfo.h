@@ -12,9 +12,9 @@
 namespace DXCam {
 
 struct DeviceInfo {
-    std::wstring description;
-    SIZE_T vram_size;
-    UINT vendor_id;
+    [[maybe_unused]] std::wstring description;
+    [[maybe_unused]] SIZE_T vram_size;
+    [[maybe_unused]] UINT vendor_id;
 };
 
 }  // namespace DXCam

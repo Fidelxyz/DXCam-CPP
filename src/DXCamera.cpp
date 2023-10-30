@@ -1,7 +1,5 @@
 #include "DXCamera.h"
 
-#include <comdef.h>
-
 #include <cstdio>
 #include <format>
 #include <stdexcept>
@@ -164,19 +162,8 @@ void DXCamera::on_output_change() {
 
     this->rotation_angle = this->output->get_rotation_angle();
 
-    while (true) {
-        try {
-            this->stagesurf = StageSurface(this->output, this->device);
-            this->duplicator = Duplicator(this->output, this->device);
-        } catch (const _com_error &e) {  // TODO untested
-            continue;
-        }
-        break;
-    }
-}
-
-void DXCamera::rebuild_frame_buffer() {
-    this->rebuild_frame_buffer(this->region);
+    this->stagesurf = StageSurface(this->output, this->device);
+    this->duplicator = Duplicator(this->output, this->device);
 }
 
 void DXCamera::rebuild_frame_buffer(const Region &region) {

@@ -23,20 +23,22 @@ public:
              size_t max_buffer_len = 64);
     ~DXCamera();
 
-    cv::Mat grab();
-    cv::Mat grab(const Region &region);
+    [[maybe_unused]] cv::Mat grab();
+    [[maybe_unused]] cv::Mat grab(const Region &region);
 
-    void start(int target_fps = 60, bool video_mode = false, int delay = 0);
-    void start(const Region &region, int target_fps = 60,
-               bool video_mode = false, int delay = 0);
+    [[maybe_unused]] void start(int target_fps = 60, bool video_mode = false,
+                                int delay = 0);
+    [[maybe_unused]] void start(const Region &region, int target_fps = 60,
+                                bool video_mode = false, int delay = 0);
 
-    void stop();
+    [[maybe_unused]] void stop();
 
-    cv::Mat get_latest_frame();
+    [[maybe_unused]] cv::Mat get_latest_frame();
 
-    void get_frame_buffer(const std::span<cv::Mat> *frame_buffer,
-                          const int *head, const int *tail, const size_t *len,
-                          const bool *full, std::mutex *frame_buffer_mutex);
+    [[maybe_unused]] void get_frame_buffer(
+            const std::span<cv::Mat> *frame_buffer, const int *head,
+            const int *tail, const size_t *len, const bool *full,
+            std::mutex *frame_buffer_mutex);
 
     long width = 0;
     long height = 0;
@@ -53,7 +55,6 @@ private:
 
     void on_output_change();
 
-    void rebuild_frame_buffer();
     void rebuild_frame_buffer(const Region &region);
 
     Output *output;

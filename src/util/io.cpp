@@ -23,19 +23,6 @@ std::vector<IDXGIAdapter1 *> enum_dxgi_adapters() {
     return adapters;
 }
 
-std::vector<IDXGIOutput1 *> enum_dxgi_outputs(IDXGIAdapter1 *adapter) {
-    std::vector<IDXGIOutput1 *> outputs;
-    IDXGIOutput1 *output = nullptr;
-    for (UINT i = 0;
-         adapter->EnumOutputs(i, reinterpret_cast<IDXGIOutput **>(&output)) !=
-         DXGI_ERROR_NOT_FOUND;
-         i++) {
-        outputs.emplace_back(output);
-        output = nullptr;
-    }
-    return outputs;
-}
-
 OutputMetadata get_output_metadata() {
     OutputMetadata output_metadata;
     auto adapter = DISPLAY_DEVICEW();
@@ -64,12 +51,6 @@ OutputMetadata get_output_metadata() {
         }
     }
     return output_metadata;
-}
-
-bool get_monitor_name_by_handle(HMONITOR const &hmonitor) {
-    auto info = MONITORINFOEXW();
-    info.cbSize = sizeof(MONITORINFOEXW);
-    return GetMonitorInfoW(hmonitor, &info);
 }
 
 }  // namespace DXCam

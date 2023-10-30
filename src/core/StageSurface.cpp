@@ -33,7 +33,7 @@ StageSurface::~StageSurface() {
     }
 }
 
-DXGI_MAPPED_RECT StageSurface::map() {
+DXGI_MAPPED_RECT StageSurface::map() const {
     IDXGISurface *surface = nullptr;
     this->texture->QueryInterface(__uuidof(IDXGISurface),
                                   reinterpret_cast<void **>(&surface));
@@ -44,7 +44,7 @@ DXGI_MAPPED_RECT StageSurface::map() {
     return rect;
 }
 
-void StageSurface::unmap() {
+void StageSurface::unmap() const {
     IDXGISurface *surface = nullptr;
     this->texture->QueryInterface(__uuidof(IDXGISurface),
                                   reinterpret_cast<void **>(&surface));
