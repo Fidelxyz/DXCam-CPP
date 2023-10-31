@@ -4,6 +4,7 @@
 
 #include "core/Output.h"
 
+#include <cassert>
 #include <utility>
 
 namespace DXCam {
@@ -12,7 +13,10 @@ Output::Output(IDXGIOutput1 *const output) : output(output), desc() {
     this->update_desc();
 }
 
-void Output::update_desc() { this->output->GetDesc(&this->desc); }
+void Output::update_desc() {
+    HRESULT hr = this->output->GetDesc(&this->desc);
+    assert(SUCCEEDED(hr));
+}
 
 OutputInfo Output::get_info() const {
     LONG width, height;

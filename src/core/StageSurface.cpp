@@ -4,25 +4,30 @@
 
 #include "core/StageSurface.h"
 
+#include <cassert>
+
 namespace DXCam {
 
 StageSurface::StageSurface(Output *const output, Device *const device)
     : desc() {
     output->get_surface_size(&this->width, &this->height);
     if (this->texture == nullptr) {
-        this->desc.Width = this->width;
-        this->desc.Height = this->height;
-        this->desc.Format = this->dxgi_format;
-        this->desc.MipLevels = 1;
-        this->desc.ArraySize = 1;
-        this->desc.SampleDesc.Count = 1;
-        this->desc.SampleDesc.Quality = 0;
-        this->desc.Usage = D3D11_USAGE_STAGING;
-        this->desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-        this->desc.MiscFlags = 0;
-        this->desc.BindFlags = 0;
+        this->desc = {
+                static_cast<UINT>(this->width),
+                static_cast<UINT>(this->height),
+                1,
+                1,
+                this->dxgi_format,
+                {1, 0},
+                D3D11_USAGE_STAGING,
+                0,
+                D3D11_CPU_ACCESS_READ,
+                0
+        };
 
-        device->device->CreateTexture2D(&this->desc, nullptr, &this->texture);
+        HRESULT hr = device->device->CreateTexture2D(&this->desc, nullptr,
+                                                     &this->texture);
+        assert(SUCCEEDED(hr));
     }
 }
 
@@ -35,19 +40,22 @@ StageSurface::~StageSurface() {
 
 DXGI_MAPPED_RECT StageSurface::map() const {
     IDXGISurface *surface = nullptr;
-    this->texture->QueryInterface(__uuidof(IDXGISurface),
-                                  reinterpret_cast<void **>(&surface));
+    HRESULT hr = this->texture->QueryInterface(
+            __uuidof(IDXGISurface), reinterpret_cast<void **>(&surface));
+    assert(SUCCEEDED(hr));
 
     DXGI_MAPPED_RECT rect;
-    surface->Map(&rect, DXGI_MAP_READ);
+    hr = surface->Map(&rect, DXGI_MAP_READ);
+    assert(SUCCEEDED(hr));
 
     return rect;
 }
 
 void StageSurface::unmap() const {
     IDXGISurface *surface = nullptr;
-    this->texture->QueryInterface(__uuidof(IDXGISurface),
-                                  reinterpret_cast<void **>(&surface));
+    HRESULT hr = this->texture->QueryInterface(
+            __uuidof(IDXGISurface), reinterpret_cast<void **>(&surface));
+    assert(SUCCEEDED(hr));
 
     surface->Unmap();
 }

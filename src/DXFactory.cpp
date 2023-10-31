@@ -33,7 +33,7 @@ std::shared_ptr<DXCamera> DXFactory::create(const int device_idx,
     }
 
     auto instant_ptr = find_instant(device_idx, output_idx);
-    if (!instant_ptr) {
+    if (instant_ptr) {
         printf("You already created a DXCamera Instance for Device %d--Output "
                "%d!\n",
                device_idx, output_idx);
@@ -52,6 +52,7 @@ std::shared_ptr<DXCamera> DXFactory::create(const int device_idx,
     auto camera = std::make_shared<DXCamera>(output, device, region, false,
                                              output_color, max_buffer_len);
     this->camera_instants[std::make_tuple(device_idx, output_idx)] = camera;
+    std::this_thread::sleep_for(std::chrono::nanoseconds(10000));
     return camera;
 }
 
@@ -80,6 +81,7 @@ std::shared_ptr<DXCamera> DXFactory::create(const Region &region,
     auto camera = std::make_shared<DXCamera>(output, device, region, true,
                                              output_color, max_buffer_len);
     this->camera_instants[std::make_tuple(device_idx, output_idx)] = camera;
+    std::this_thread::sleep_for(std::chrono::nanoseconds(10000));
     return camera;
 }
 
@@ -96,7 +98,11 @@ std::vector<std::vector<OutputInfo>> DXFactory::get_outputs_info() const {
     for (const auto &device_outputs: this->outputs) {
         std::vector<OutputInfo> device_outputs_info;
         for (const auto &output: device_outputs) {
-            device_outputs_info.emplace_back(output.get_info());
+            OutputInfo output_info = output.get_info();
+            output_info.is_primary =
+                    this->output_metadata.get(output.get_device_name())
+                            .is_primary;
+            device_outputs_info.emplace_back(std::move(output_info));
         }
         outputs_info.emplace_back(std::move(device_outputs_info));
     }

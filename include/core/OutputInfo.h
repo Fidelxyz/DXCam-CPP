@@ -14,6 +14,7 @@ struct OutputInfo {
     [[maybe_unused]] LONG width;
     [[maybe_unused]] LONG height;
     [[maybe_unused]] int rotation_angle;
+    [[maybe_unused]] bool is_primary;
 };
 
 #endif  //DXCAM_CPP_OUTPUTINFO_H

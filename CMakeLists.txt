@@ -29,7 +29,7 @@ include_directories(include src
         ${OpenCV_INCLUDE_DIRS}
 )
 
-add_library(DXCam_static STATIC
+add_library(DXCam STATIC
         include/core/ColorFormat.h
         include/core/Device.h
         include/core/DeviceInfo.h
@@ -57,9 +57,10 @@ add_library(DXCam_static STATIC
         src/DXFactory.cpp
         include/core/DeviceInfo.h
         include/core/OutputInfo.h
-        include/core/ColorFormat.h)
+        include/core/ColorFormat.h
+        examples/src/screenshot.cpp)
 
-target_link_libraries(DXCam_static
+target_link_libraries(DXCam
         d3d11
         dxgi
         ${OpenCV_LIBS})
@@ -67,3 +68,4 @@ target_link_libraries(DXCam_static
 message(STATUS "Building DXCam_CPP - done")
 
 add_subdirectory(benchmark)
+add_subdirectory(examples)

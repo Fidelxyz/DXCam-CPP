@@ -4,10 +4,13 @@
 
 #include "core/Device.h"
 
+#include <cassert>
+
 namespace DXCam {
 
 Device::Device(IDXGIAdapter1 *const adapter) : adapter(adapter), desc() {
-    this->adapter->GetDesc1(&this->desc);
+    HRESULT hr = this->adapter->GetDesc1(&this->desc);
+    assert(SUCCEEDED(hr));
 
     const D3D_FEATURE_LEVEL feature_levels[] = {
             D3D_FEATURE_LEVEL_11_0,
@@ -15,9 +18,10 @@ Device::Device(IDXGIAdapter1 *const adapter) : adapter(adapter), desc() {
             D3D_FEATURE_LEVEL_10_0,
     };
 
-    D3D11CreateDevice(this->adapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, 0,
-                      feature_levels, std::size(feature_levels), 7,
-                      &this->device, nullptr, &this->context);
+    hr = D3D11CreateDevice(this->adapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, 0,
+                           feature_levels, std::size(feature_levels), 7,
+                           &this->device, nullptr, &this->context);
+    assert(SUCCEEDED(hr));
     this->device->GetImmediateContext(&this->im_context);
 }
 

@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.26)
-project(DXCam_CPP_benchmark)
+project(DXCam_CPP_examples)
 
 set(CMAKE_CXX_STANDARD 20)
 
-message(STATUS "Building benchmark")
+message(STATUS "Building examples")
 
 # Set target directories
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -21,12 +21,9 @@ find_package(OpenCV REQUIRED)
 
 include_directories(../include)
 link_directories(${CMAKE_BINARY_DIR}/lib)
-add_executable(benchmark_max_fps src/max_fps.cpp)
-target_link_libraries(benchmark_max_fps
-        DXCam
-        ${OpenCV_LIBS}
-)
 
-add_dependencies(benchmark_max_fps DXCam)
+add_executable(screenshot src/screenshot.cpp)
+target_link_libraries(screenshot DXCam ${OpenCV_LIBS})
+add_dependencies(screenshot DXCam)
 
-message(STATUS "Building benchmark - done")
+message(STATUS "Building examples - done")

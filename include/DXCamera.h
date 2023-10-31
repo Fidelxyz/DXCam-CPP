@@ -36,9 +36,9 @@ public:
     [[maybe_unused]] cv::Mat get_latest_frame();
 
     [[maybe_unused]] void get_frame_buffer(
-            const std::span<cv::Mat> *frame_buffer, const int *head,
-            const int *tail, const size_t *len, const bool *full,
-            std::mutex *frame_buffer_mutex);
+            const std::span<cv::Mat> **frame_buffer, const int **head,
+            const int **tail, const size_t **len, const bool **full,
+            std::mutex **frame_buffer_mutex);
 
     long width = 0;
     long height = 0;

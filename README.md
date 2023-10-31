@@ -223,7 +223,9 @@ To be completed.
 
 For Max FPS Capability:
 
-On my laptop, I gets an average framerate up to 500 FPS for 1080p capturing.
+> 10000 loops, best of 5: **421.296668 FPS**
+
+_Data obtained from running on my Laptop (i7-11800H & RTX 3060 Laptop)._
 
 ## TODO
 

@@ -185,16 +185,16 @@ void DXCamera::rebuild_frame_buffer(const Region &region) {
     }
 }
 
-void DXCamera::get_frame_buffer(const std::span<cv::Mat> *frame_buffer,
-                                const int *head, const int *tail,
-                                const size_t *len, const bool *full,
-                                std::mutex *frame_buffer_mutex) {
-    frame_buffer = &this->frame_buffer;
-    head = &this->head;
-    tail = &this->tail;
-    len = &this->max_buffer_len;
-    full = &this->full;
-    frame_buffer_mutex = &this->frame_buffer_mutex;
+void DXCamera::get_frame_buffer(const std::span<cv::Mat> **frame_buffer,
+                                const int **head, const int **tail,
+                                const size_t **len, const bool **full,
+                                std::mutex **frame_buffer_mutex) {
+    *frame_buffer = &this->frame_buffer;
+    *head = &this->head;
+    *tail = &this->tail;
+    *len = &this->max_buffer_len;
+    *full = &this->full;
+    *frame_buffer_mutex = &this->frame_buffer_mutex;
 }
 
 }  // namespace DXCam

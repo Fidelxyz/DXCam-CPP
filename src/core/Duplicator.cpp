@@ -4,10 +4,27 @@
 
 #include "core/Duplicator.h"
 
+#include <cassert>
+#include <iostream>
+
 namespace DXCam {
 
 Duplicator::Duplicator(Output *const output, Device *const device) {
-    output->output->DuplicateOutput(device->device, &this->duplicator);
+    HRESULT hr =
+            output->output->DuplicateOutput(device->device, &this->duplicator);
+    if (hr == DXGI_ERROR_UNSUPPORTED) {
+        std::cerr
+                << "IDXGIOutput1::DuplicateOutput failed: "
+                   "DXGI_ERROR_UNSUPPORTED.\n"
+                   "If you are running this application on a Microsoft Hybrid "
+                   "system, try to run the application on the integrated GPU "
+                   "instead of on the discrete GPU."
+                << std::endl;
+        throw std::runtime_error(
+                "IDXGIOutput1::DuplicateOutput failed: "
+                "DXGI_ERROR_UNSUPPORTED.");
+    }
+    assert(SUCCEEDED(hr));
 }
 
 Duplicator::~Duplicator() {
@@ -26,6 +43,7 @@ bool Duplicator::update_frame() {
         this->updated = true;
         return true;
     }
+    assert(SUCCEEDED(hr));
 
     hr = res->QueryInterface(__uuidof(ID3D11Texture2D),
                              reinterpret_cast<void **>(&this->texture));
@@ -35,6 +53,9 @@ bool Duplicator::update_frame() {
     return true;
 }
 
-void Duplicator::release_frame() const { this->duplicator->ReleaseFrame(); }
+void Duplicator::release_frame() const {
+    HRESULT hr = this->duplicator->ReleaseFrame();
+    assert(SUCCEEDED(hr));
+}
 
 }  // namespace DXCam
