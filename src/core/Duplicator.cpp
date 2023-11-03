@@ -55,7 +55,7 @@ bool Duplicator::update_frame() {
 
 void Duplicator::release_frame() const {
     HRESULT hr = this->duplicator->ReleaseFrame();
-    assert(SUCCEEDED(hr));
+    assert(SUCCEEDED(hr) || hr == DXGI_ERROR_INVALID_CALL);
 }
 
 }  // namespace DXCam

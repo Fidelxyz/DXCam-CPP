@@ -208,13 +208,18 @@ camera2 = DXCam::create(0);  // Allowed
 
 ## Benchmarks
 
-To be completed.
-
-For Max FPS Capability:
-
-> 10000 loops, best of 5: **421.296668 FPS**
+> To be completed.
 
 _Data obtained from running on my Laptop (i7-11800H & RTX 3060 Laptop)._
+
+### For Max FPS Capability
+
+10000 loops, best of 5: **205996.559857 FPS**
+
+I am not sure if this result is correct (capturing is not optimized away),
+although I have no evidence to prove it is wrong. You can see the code for
+benchmark in `benchmark/src/max_fps.cpp`. If anyone have an idea about this,
+please notify me.
 
 ## TODO
 
