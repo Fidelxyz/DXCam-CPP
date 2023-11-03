@@ -30,7 +30,6 @@ include_directories(include src
 )
 
 add_library(DXCam STATIC
-        include/core/ColorFormat.h
         include/core/Device.h
         include/core/DeviceInfo.h
         include/core/Duplicator.h
@@ -57,7 +56,6 @@ add_library(DXCam STATIC
         src/DXFactory.cpp
         include/core/DeviceInfo.h
         include/core/OutputInfo.h
-        include/core/ColorFormat.h
         examples/src/screenshot.cpp)
 
 target_link_libraries(DXCam

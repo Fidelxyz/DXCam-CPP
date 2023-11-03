@@ -20,11 +20,9 @@ public:
     DXFactory();
 
     std::shared_ptr<DXCamera> create(int device_idx = 0, int output_idx = -1,
-                                     ColorFormat output_color = RGB,
                                      size_t max_buffer_len = 64);
     std::shared_ptr<DXCamera> create(const Region &region, int device_idx = 0,
                                      int output_idx = -1,
-                                     ColorFormat output_color = RGB,
                                      size_t max_buffer_len = 64);
 
     [[nodiscard]] std::vector<DeviceInfo> get_devices_info() const;

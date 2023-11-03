@@ -24,7 +24,7 @@ int main() {
     const int repeat = 5;
 
     // init
-    auto camera = DXCam::create(region, 0, 0);
+    auto camera = DXCam::create(region);
 
     // benchmark
     double duration = std::numeric_limits<double>::max();

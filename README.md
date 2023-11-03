@@ -1,4 +1,4 @@
-# DXCam_CPP
+# DXCam-CPP
 
 > Fastest Screenshot for Windows
 
@@ -123,17 +123,6 @@ struct DXCam::OutputInfo {
 };
 ```
 
-### Output Format
-
-You can specify the output color mode upon creation of the DXCamera instance:
-
-```cpp
-DXCam::DXCamera camera = DXCam::create(0, -1, BGRA);
-```
-
-We currently support `RGB`, `RGBA`, `BGR`, `BGRA`, `GRAY`, with `GRAY` being the
-gray scale.
-
 ### Video Buffer
 
 The captured frames will be insert into a fixed-size ring buffer, and when the
@@ -142,7 +131,7 @@ the max buffer length (defualt to 64) using the argument `max_buffer_len` upon
 creation of the `DXCamera` instance.
 
 ```cpp
-DXCam::DXCamera camera = DXCam::create(0, -1, RGB, 512);
+DXCam::DXCamera camera = DXCam::create(0, -1, 512);
 ```
 
 ### Consume Frames from Buffer

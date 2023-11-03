@@ -6,7 +6,6 @@
 #include <string>
 #include <thread>
 
-#include "core/ColorFormat.h"
 #include "core/Device.h"
 #include "core/Duplicator.h"
 #include "core/Output.h"
@@ -19,8 +18,7 @@ namespace DXCam {
 class DXCamera {
 public:
     DXCamera(Output *output, Device *device, const Region &region,
-             bool region_set_by_user, ColorFormat output_color = RGB,
-             size_t max_buffer_len = 64);
+             bool region_set_by_user, size_t max_buffer_len = 64);
     ~DXCamera();
 
     [[maybe_unused]] cv::Mat grab();
@@ -42,7 +40,6 @@ public:
 
     long width = 0;
     long height = 0;
-    size_t channel_size;
     int rotation_angle;
     size_t max_buffer_len;
     bool is_capturing = false;

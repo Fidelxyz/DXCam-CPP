@@ -26,7 +26,6 @@ DXFactory::DXFactory() {
 
 std::shared_ptr<DXCamera> DXFactory::create(const int device_idx,
                                             int output_idx,
-                                            const ColorFormat output_color,
                                             const size_t max_buffer_len) {
     if (output_idx == -1) {
         output_idx = this->find_primary_output_idx(device_idx);
@@ -50,16 +49,15 @@ std::shared_ptr<DXCamera> DXFactory::create(const int device_idx,
     const Region region = {0, 0, width, height};
 
     auto camera = std::make_shared<DXCamera>(output, device, region, false,
-                                             output_color, max_buffer_len);
+                                             max_buffer_len);
     this->camera_instants[std::make_tuple(device_idx, output_idx)] = camera;
-    std::this_thread::sleep_for(std::chrono::nanoseconds(10000));
+    std::this_thread::sleep_for(std::chrono::nanoseconds(20000));
     return camera;
 }
 
 std::shared_ptr<DXCamera> DXFactory::create(const Region &region,
                                             const int device_idx,
                                             int output_idx,
-                                            const ColorFormat output_color,
                                             const size_t max_buffer_len) {
     if (output_idx == -1) {
         output_idx = this->find_primary_output_idx(device_idx);
@@ -79,9 +77,9 @@ std::shared_ptr<DXCamera> DXFactory::create(const Region &region,
     output->update_desc();
 
     auto camera = std::make_shared<DXCamera>(output, device, region, true,
-                                             output_color, max_buffer_len);
+                                             max_buffer_len);
     this->camera_instants[std::make_tuple(device_idx, output_idx)] = camera;
-    std::this_thread::sleep_for(std::chrono::nanoseconds(10000));
+    std::this_thread::sleep_for(std::chrono::nanoseconds(20000));
     return camera;
 }
 

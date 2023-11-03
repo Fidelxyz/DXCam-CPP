@@ -24,9 +24,8 @@ int main() {
 
     auto camera = DXCam::create();
 
-    auto frame = camera->grab();
-
     while (true) {
+        auto frame = camera->grab();
         cv::imshow("frame", frame);
         cv::waitKey(0);
     }

@@ -8,19 +8,18 @@
 namespace DXCam {
 DXCamera::DXCamera(Output *const output, Device *const device,
                    const Region &region, const bool region_set_by_user,
-                   const ColorFormat output_color, const size_t max_buffer_len)
+                   const size_t max_buffer_len)
     : output(output),
       device(device),
       region(region),
       region_set_by_user(region_set_by_user),
       stagesurf(output, device),
       duplicator(output, device),
-      processor(output_color),
+      processor(),
       max_buffer_len(max_buffer_len) {
     this->output->get_resolution(&this->width, &this->height);
     this->validate_region(this->region);
 
-    this->channel_size = CHANNEL_SIZE.at(output_color);
     this->rotation_angle = output->get_rotation_angle();
 }
 
@@ -176,8 +175,7 @@ void DXCamera::rebuild_frame_buffer(const Region &region) {
         this->frame_buffer = std::span(new cv::Mat[this->max_buffer_len],
                                        this->max_buffer_len);
         for (auto &frame: this->frame_buffer) {
-            frame.create(region_height, region_width,
-                         CV_8UC(this->channel_size));
+            frame.create(region_height, region_width, CV_8UC4);
         }
         this->head = 0;
         this->tail = 0;

@@ -6,28 +6,6 @@
 
 namespace DXCam {
 
-Processor::Processor(const ColorFormat output_color) {
-    this->color_mode = output_color;
-}
-
-cv::Mat Processor::process_cvt_color(const cv::Mat &image) {
-    // one-time initialization for cvt_color
-    if (!this->cvt_color) {
-        if (this->color_mode == BGRA) {  // no conversion required
-            this->cvt_color = [](const cv::Mat &image) { return image; };
-        } else {
-            const auto cv2_code = this->COLOR_MAPPING.at(this->color_mode);
-            this->cvt_color = [cv2_code](const cv::Mat &src) {
-                cv::Mat dst;
-                cv::cvtColor(src, dst, cv2_code);
-                return dst;
-            };
-        }
-    }
-
-    return this->cvt_color(image);
-}
-
 cv::Mat Processor::process(const DXGI_MAPPED_RECT &rect, const int width,
                            const int height, const Region &region,
                            const int rotation_angle) {
@@ -39,8 +17,6 @@ cv::Mat Processor::process(const DXGI_MAPPED_RECT &rect, const int width,
     } else {
         image = cv::Mat(width, pitch, CV_8UC4, rect.pBits);
     }
-
-    image = this->process_cvt_color(image);
 
     // TODO untested
     switch (rotation_angle) {
