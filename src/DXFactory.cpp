@@ -18,7 +18,8 @@ DXFactory::DXFactory() {
         if (!p_outputs.empty()) {
             this->devices.emplace_back(device);
             this->outputs.emplace_back(p_outputs.begin(), p_outputs.end());
-            // in-place construct std::vector<Output>(p_outputs.begin(), p_outputs.end())
+            // in-place construct std::vector<Output>(p_outputs.begin(),
+            // p_outputs.end())
         }
     }
     this->output_metadata = get_output_metadata();
@@ -51,7 +52,7 @@ std::shared_ptr<DXCamera> DXFactory::create(const int device_idx,
     auto camera = std::make_shared<DXCamera>(output, device, region, false,
                                              max_buffer_len);
     this->camera_instants[std::make_tuple(device_idx, output_idx)] = camera;
-    std::this_thread::sleep_for(std::chrono::nanoseconds(20000));
+    std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
     return camera;
 }
 
@@ -79,7 +80,7 @@ std::shared_ptr<DXCamera> DXFactory::create(const Region &region,
     auto camera = std::make_shared<DXCamera>(output, device, region, true,
                                              max_buffer_len);
     this->camera_instants[std::make_tuple(device_idx, output_idx)] = camera;
-    std::this_thread::sleep_for(std::chrono::nanoseconds(20000));
+    std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
     return camera;
 }
 

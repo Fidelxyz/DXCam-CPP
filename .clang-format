@@ -40,6 +40,7 @@ BreakInheritanceList: BeforeColon
 ColumnLimit: 80
 CompactNamespaces: false
 ContinuationIndentWidth: 8
+FixNamespaceComments: true
 IndentCaseLabels: true
 IndentPPDirectives: None
 IndentWidth: 4
@@ -48,7 +49,8 @@ MaxEmptyLinesToKeep: 2
 ObjCSpaceAfterProperty: false
 ObjCSpaceBeforeProtocolList: true
 PointerAlignment: Right
-ReflowComments: false
+ReflowComments: true
+SeparateDefinitionBlocks: Always
 SpaceAfterCStyleCast: true
 SpaceAfterLogicalNot: false
 SpaceAfterTemplateKeyword: false
@@ -67,5 +69,3 @@ SpacesInParentheses: false
 SpacesInSquareBrackets: false
 TabWidth: 4
 UseTab: Never
-SeparateDefinitionBlocks: Always
-FixNamespaceComments: true

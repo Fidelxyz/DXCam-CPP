@@ -3,7 +3,7 @@ project(DXCam_CPP_examples)
 
 set(CMAKE_CXX_STANDARD 20)
 
-message(STATUS "Building examples")
+message(STATUS "Configuring examples")
 
 # Set target directories
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -26,4 +26,4 @@ add_executable(screenshot src/screenshot.cpp)
 target_link_libraries(screenshot DXCam ${OpenCV_LIBS})
 add_dependencies(screenshot DXCam)
 
-message(STATUS "Building examples - done")
+message(STATUS "Configuring examples - done")

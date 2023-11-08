@@ -19,4 +19,4 @@ struct DeviceInfo {
 
 }  // namespace DXCam
 
-#endif  //DXCAM_CPP_DEVICEINFO_H
+#endif  // DXCAM_CPP_DEVICEINFO_H

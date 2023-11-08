@@ -2,8 +2,11 @@
 
 #include <cstdio>
 #include <format>
+#include <span>
 #include <stdexcept>
 #include <thread>
+
+#include "util/HighResTimer.h"
 
 namespace DXCam {
 DXCamera::DXCamera(Output *const output, Device *const device,
@@ -73,7 +76,7 @@ void DXCamera::start(const Region &region, const int target_fps,
 
     this->is_capturing = true;
     this->rebuild_frame_buffer(region);
-    this->thread = std::thread([this, &region, &target_fps, &video_mode] {
+    this->thread = std::thread([this, region, target_fps, video_mode] {
         this->capture(region, target_fps, video_mode);
     });
 }
@@ -81,20 +84,23 @@ void DXCamera::start(const Region &region, const int target_fps,
 void DXCamera::stop() {
     if (this->is_capturing) {
         this->frame_available = true;
-        this->frame_available_cv.notify_all();
+        this->frame_available.notify_all();
         this->stop_capture = true;
         if (this->thread.joinable()) { this->thread.join(); }
+        this->stop_capture = false;
         this->is_capturing = false;
     }
-    delete[] this->frame_buffer.data();
+    delete[] this->frame_buffer;
+    this->frame_buffer = nullptr;
 }
 
 cv::Mat DXCamera::get_latest_frame() {
-    std::unique_lock lock(this->frame_buffer_mutex);
-    this->frame_available_cv.wait(lock,
-                                  [this] { return this->frame_available; });
+    this->frame_available.wait(false);
     this->frame_available = false;
-    return this->frame_buffer[(this->head - 1) % this->max_buffer_len];
+
+    auto frame_idx = (this->head - 1) % this->max_buffer_len;
+    std::scoped_lock lock(this->frame_buffer_mutex[frame_idx]);
+    return this->frame_buffer[frame_idx];
 }
 
 void DXCamera::capture(const Region &region, const int target_fps,
@@ -103,47 +109,68 @@ void DXCamera::capture(const Region &region, const int target_fps,
         throw std::invalid_argument("Target FPS should be greater than 0");
     }
 
-    const auto period = std::chrono::duration<double>(1.0 / target_fps);
-    auto last_frame_time =
-            std::chrono::time_point<std::chrono::high_resolution_clock>::min();
+    const HighResTimer timer(1000.0 / target_fps);
 
     // for FPS statistics
-    const auto capture_start_time = std::chrono::high_resolution_clock::now();
     int frame_count = 0;
+    const auto capture_start_time = std::chrono::steady_clock::now();
 
     while (!this->stop_capture) {
-        std::this_thread::sleep_until(last_frame_time + period);
-        last_frame_time = std::chrono::high_resolution_clock::now();
+        timer.wait();
 
         auto frame = this->grab(region);
 
-        if (!frame.empty() || video_mode) {
-            std::scoped_lock lock(this->frame_buffer_mutex);
+        if (video_mode || !frame.empty()) {
+            std::scoped_lock lock_all(this->frame_buffer_all_mutex);
 
             if (video_mode && frame.empty()) {
                 frame = this->frame_buffer[(this->tail - 1) %
                                            static_cast<int>(max_buffer_len)];
             }
 
-            this->frame_buffer[this->tail] = std::move(frame);
+            // The order of the following instructions is important
+            // for thread safety!
+
+            // Move the head pointer.
+            // This should be done before writing the frame.
+            if (this->full) {
+                this->head = (this->head + 1) %
+                             static_cast<int>(this->max_buffer_len);
+            }
+            // Now, the frame to be written will be considered outside the range
+            // of contents of frame buffer.
+            {
+                // Lock the mutex of the single frame.
+                std::scoped_lock lock_frame(
+                        this->frame_buffer_mutex[this->tail]);
+                this->frame_buffer[this->tail] = std::move(frame);
+            }
+            // Update the "full" flag.
+            // This should be done before moving the tail pointer;
+            // otherwise, if the tail pointer is moved but the full flag is not
+            // updated, the user will get an empty frame buffer.
+            this->full = this->tail + 1 == this->head;
+            // Move the tail pointer.
+            // This should be done after all the other operations are finished.
+            // In this case, the new frame is ready to be included in the
+            // contents of the frame buffer.
             this->tail =
                     (this->tail + 1) % static_cast<int>(this->max_buffer_len);
-            if (this->full) { this->head = this->tail; }
-            this->full = this->head == this->tail;
 
             this->frame_available = true;
+            this->frame_available.notify_all();
             frame_count++;
         }
     }
 
-    const auto capture_stop_time = std::chrono::high_resolution_clock::now();
+    const auto capture_stop_time = std::chrono::steady_clock::now();
+
     const auto capture_duration = duration_cast<std::chrono::seconds>(
             capture_stop_time - capture_start_time);
-    const int fps = static_cast<int>(
+    const double fps =
             static_cast<double>(frame_count) /
-            static_cast<double>(
-                    std::chrono::seconds(capture_duration).count()));
-    printf("Screen Capture FPS: %d\n", fps);
+            static_cast<double>(std::chrono::seconds(capture_duration).count());
+    printf("Screen Capture FPS: %lf\n", fps);
 }
 
 void DXCamera::on_output_change() {
@@ -169,30 +196,38 @@ void DXCamera::rebuild_frame_buffer(const Region &region) {
     auto region_width = region.get_width();
     auto region_height = region.get_height();
 
+    // TODO: Check for locked mutex?
+
     {
-        std::scoped_lock lock(this->frame_buffer_mutex);
-        delete[] this->frame_buffer.data();
-        this->frame_buffer = std::span(new cv::Mat[this->max_buffer_len],
-                                       this->max_buffer_len);
-        for (auto &frame: this->frame_buffer) {
+        std::scoped_lock lock(this->frame_buffer_all_mutex);
+
+        delete[] this->frame_buffer;
+        this->frame_buffer = new cv::Mat[this->max_buffer_len];
+        for (auto &frame: std::span(this->frame_buffer, this->max_buffer_len)) {
             frame.create(region_height, region_width, CV_8UC4);
         }
+        delete[] this->frame_buffer_mutex;
+        this->frame_buffer_mutex = new std::mutex[this->max_buffer_len];
         this->head = 0;
         this->tail = 0;
         this->full = false;
     }
 }
 
-void DXCamera::get_frame_buffer(const std::span<cv::Mat> **frame_buffer,
-                                const int **head, const int **tail,
-                                const size_t **len, const bool **full,
-                                std::mutex **frame_buffer_mutex) {
+void DXCamera::get_frame_buffer(const cv::Mat *const **frame_buffer,
+                                std::mutex *const **frame_buffer_mutex,
+                                const size_t **len,
+                                const std::atomic<int> **head,
+                                const std::atomic<int> **tail,
+                                const std::atomic<bool> **full,
+                                std::mutex **frame_buffer_all_mutex) {
     *frame_buffer = &this->frame_buffer;
+    *frame_buffer_mutex = &this->frame_buffer_mutex;
+    *len = &this->max_buffer_len;
     *head = &this->head;
     *tail = &this->tail;
-    *len = &this->max_buffer_len;
     *full = &this->full;
-    *frame_buffer_mutex = &this->frame_buffer_mutex;
+    *frame_buffer_all_mutex = &this->frame_buffer_all_mutex;
 }
 
 }  // namespace DXCam

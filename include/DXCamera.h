@@ -1,8 +1,7 @@
 #ifndef DXCAM_CPP_DXCAMERA_H
 #define DXCAM_CPP_DXCAMERA_H
 
-#include <condition_variable>
-#include <span>
+#include <array>
 #include <string>
 #include <thread>
 
@@ -21,22 +20,84 @@ public:
              bool region_set_by_user, size_t max_buffer_len = 64);
     ~DXCamera();
 
+    /**
+     * @brief Capture the default region instantly.
+     *
+     * @return a Mat object, containing the captured image.
+     */
     [[maybe_unused]] cv::Mat grab();
+    /**
+     * @brief Capture the specified region instantly.
+     *
+     * @param [in] region The rectangle region to be captured.
+     * @return a Mat object, containing the captured image.
+     */
     [[maybe_unused]] cv::Mat grab(const Region &region);
 
+    /**
+     * @brief Start capturing the default region.
+     *
+     * @param [in] target_fps The target fps.
+     * @param [in] video_mode If true, a frame will always be pushed to the
+     * frame buffer at the target fps even if there is no a new frame available.
+     * If false, only new frames will be pushed to the frame buffer.
+     * @param [in] delay The delay in seconds before capturing starts.
+     */
     [[maybe_unused]] void start(int target_fps = 60, bool video_mode = false,
                                 int delay = 0);
+    /**
+     * @brief Start capturing the specified region.
+     *
+     * @param [in] region The rectangle region to be captured.
+     * @param [in] target_fps The target fps.
+     * @param [in] video_mode If true, a frame will always be pushed to the
+     * frame buffer at the target fps even if there is no a new frame available.
+     * If false, only new frames will be pushed to the frame buffer.
+     * @param [in] delay The delay in seconds before capturing starts.
+     */
     [[maybe_unused]] void start(const Region &region, int target_fps = 60,
                                 bool video_mode = false, int delay = 0);
 
+    /**
+     * @brief Stop capturing.
+     */
     [[maybe_unused]] void stop();
 
+    /**
+     * @brief Get the latest frame in the frame buffer.
+     *
+     * @return a Mat object, containing the latest frame in the frame buffer.
+     */
     [[maybe_unused]] cv::Mat get_latest_frame();
 
+    /**
+     * @brief Get the pointers to access the frame buffer, which is a circular
+     * queue.
+     *
+     * If you want to access the whole frame buffer, you should lock
+     * frame_buffer_all_mutex. If you want to access a single frame, you should
+     * lock the corresponding mutex in frame_buffer_mutex.
+     *
+     * @param [out] frame_buffer The pointer to (the pointer to the first
+     * element of) the frame buffer array.
+     * @param [out] frame_buffer_mutex The pointer to (the pointer to the first
+     * element of) the array of the mutex of single frames.
+     * @param [out] len The pointer to the length of the frame buffer.
+     * @param [out] head The pointer to the index of the oldest frame in the
+     * frame buffer.
+     * @param [out] tail The pointer to the index of the next frame of the
+     * latest frame in the frame buffer.
+     * @param [out] full The pointer to the flag indicating whether the frame
+     * buffer is full.
+     * @param [out] frame_buffer_all_mutex The pointer to the mutex of the frame
+     * buffer.
+     */
     [[maybe_unused]] void get_frame_buffer(
-            const std::span<cv::Mat> **frame_buffer, const int **head,
-            const int **tail, const size_t **len, const bool **full,
-            std::mutex **frame_buffer_mutex);
+            const cv::Mat *const **frame_buffer,
+            std::mutex *const **frame_buffer_mutex, const size_t **len,
+            const std::atomic<int> **head, const std::atomic<int> **tail,
+            const std::atomic<bool> **full,
+            std::mutex **frame_buffer_all_mutex);
 
     long width = 0;
     long height = 0;
@@ -63,17 +124,18 @@ private:
     Region region;
     bool region_set_by_user;
 
-    bool frame_available = false;
-    std::condition_variable frame_available_cv;
-    std::span<cv::Mat> frame_buffer;
-    int head = 0;
-    int tail = 0;
-    bool full = false;
+    std::mutex frame_buffer_all_mutex;
+    std::mutex *frame_buffer_mutex = nullptr;
+    std::atomic<bool> frame_available = false;
+    cv::Mat *frame_buffer = nullptr;
+    std::atomic<int> head = 0;
+    std::atomic<int> tail = 0;
+    std::atomic<bool> full = false;
+
     std::thread thread;
-    std::mutex frame_buffer_mutex;
-    std::atomic<bool> stop_capture;
+    std::atomic<bool> stop_capture = false;
 };
 
 }  // namespace DXCam
 
-#endif  //DXCAM_CPP_DXCAMERA_H
+#endif  // DXCAM_CPP_DXCAMERA_H

@@ -5,23 +5,21 @@
 #include "dxcam.h"
 
 // params
-const std::string TITLE = "[DXcam] FPS benchmark";
+const std::string TITLE = "[Benchmark] max_fps";
 const auto REGION = DXCam::Region{0, 0, 1920, 1080};
 const int TOTAL_FRAMES = 10000;
 const int REPEAT = 5;
 
-double bench(const std::shared_ptr<DXCam::DXCamera>& camera,
-             const int total_frames) {
-
-    const auto begin_time = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < total_frames;) {
+double bench(const std::shared_ptr<DXCam::DXCamera>& camera) {
+    const auto begin_time = std::chrono::steady_clock::now();
+    for (int i = 0; i < TOTAL_FRAMES;) {
         auto frame = camera->grab();
         if (!frame.empty()) {                       // new frame
             volatile auto data = std::move(frame);  // avoid optimization
             i++;
         }
     }
-    const auto end_time = std::chrono::high_resolution_clock::now();
+    const auto end_time = std::chrono::steady_clock::now();
 
     return std::chrono::duration<double>(end_time - begin_time).count();
 }
@@ -34,7 +32,7 @@ int main() {
     double duration = std::numeric_limits<double>::max();
     for (int i = 0; i < REPEAT; i++) {
         printf("Bench [%d / %d]\n", i + 1, REPEAT);
-        duration = std::min(duration, bench(camera, TOTAL_FRAMES));
+        duration = std::min(duration, bench(camera));
     }
 
     // result

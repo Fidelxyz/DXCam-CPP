@@ -95,7 +95,7 @@ cv::Mat img3 = cam3->grab();
 
 The above code creates three `DXCamera` instances
 for: `[monitor0, GPU0], [monitor1, GPU0], [monitor1, GPU1]`, and subsequently
-takes three full-screen screenshots. (like Python DXcam, cross GPU untested, but
+takes three full-screen screenshots. (Like Python DXcam, cross-GPU untested, but
 I also hope it works.)
 
 To get a complete list of devices and outputs, use `get_devices_info`
@@ -148,13 +148,13 @@ const std::span<cv::Mat> *frame_buffer;
 const int *head, tail;
 const size_t *len;
 const bool *full;
-std::mutex *frame_buffer_mutex;
+std::mutex *frame_buffer_all_mutex;
 
-camera.get_frame_buffer(&frame_buffer, &head, &tail, &len, &full, &frame_buffer_mutex);
+camera.get_frame_buffer(&frame_buffer, &head, &tail, &len, &full, &frame_buffer_all_mutex);
 
 {
-    // you should lock frame_buffer_mutex when reading the frame buffer
-    std::scoped_lock lock(*frame_buffer_mutex);
+    // you should lock frame_buffer_all_mutex when reading the frame buffer
+    std::scoped_lock lock(*frame_buffer_all_mutex);
     
     // read the frame buffer in a correct order
     for (size_t i = 0; i < *len; i++) {
@@ -164,7 +164,7 @@ camera.get_frame_buffer(&frame_buffer, &head, &tail, &len, &full, &frame_buffer_
 }
 ```
 
-The frame buffer is readonly. **You should lock `frame_buffer_mutex` when
+The frame buffer is readonly. **You should lock `frame_buffer_all_mutex` when
 reading the frame buffer**.
 
 ### Target FPS
@@ -210,7 +210,8 @@ camera2 = DXCam::create(0);  // Allowed
 
 > To be completed.
 
-_Data obtained from running on my Laptop (i7-11800H & RTX 3060 Laptop)._
+_Data obtained from running on my Laptop (i7-11800H & RTX 3060 Laptop), which a
+capturing region of 1920x1080._
 
 ### For Max FPS Capability
 
@@ -220,6 +221,18 @@ I am not sure if this result is correct (capturing is not optimized away),
 although I have no evidence to prove it is wrong. You can see the code for
 benchmark in `benchmark/src/max_fps.cpp`. If anyone have an idea about this,
 please notify me.
+
+### For Targeting FPS
+
+| Target FPS | mean(FPS), std(Frame Generation Time) |
+|------------|---------------------------------------|
+| 30         | 30.105708, 0.003644                   |
+| 60         | 61.469291, 0.002615                   |
+| 90         | 88.202446, 0.002124                   |
+| 120        | 119.426397, 0.001867                  |
+| 180        | 183.247031, 0.001520                  |
+| 240        | 228.854428, 0.001356                  |
+| 360        | 413.697012, 0.000989                  |
 
 ## TODO
 

@@ -1,0 +1,21 @@
+//
+// Created by Fidel on 2023/11/7.
+//
+
+#ifndef DXCAM_CPP_HIGHRESTIMER_H
+#define DXCAM_CPP_HIGHRESTIMER_H
+
+#include <windows.h>
+
+class HighResTimer {
+public:
+    HighResTimer(const int period_ms);
+    void wait() const;
+    void cancel() const;
+
+private:
+    const HANDLE handle;
+};
+
+
+#endif  // DXCAM_CPP_HIGHRESTIMER_H

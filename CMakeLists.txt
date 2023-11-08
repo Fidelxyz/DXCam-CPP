@@ -9,7 +9,7 @@ if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 endif ()
 
 message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
-message(STATUS "Building DXCam_CPP")
+message(STATUS "Configuring DXCam_CPP")
 
 # Set target directories
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -56,14 +56,16 @@ add_library(DXCam STATIC
         src/DXFactory.cpp
         include/core/DeviceInfo.h
         include/core/OutputInfo.h
-        examples/src/screenshot.cpp)
+        examples/src/screenshot.cpp
+        src/util/HighResTimer.cpp
+        src/util/HighResTimer.h)
 
 target_link_libraries(DXCam
         d3d11
         dxgi
         ${OpenCV_LIBS})
 
-message(STATUS "Building DXCam_CPP - done")
+message(STATUS "Configuring DXCam_CPP - done")
 
 add_subdirectory(benchmark)
 add_subdirectory(examples)
