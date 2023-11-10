@@ -38,4 +38,12 @@ target_link_libraries(benchmark_target_fps
 )
 add_dependencies(benchmark_target_fps DXCam)
 
+# Benchmark: real_grab_cost
+add_executable(real_grab_cost src/real_grab_cost.cpp)
+target_link_libraries(real_grab_cost
+        DXCam
+        ${OpenCV_LIBS}
+)
+add_dependencies(real_grab_cost DXCam)
+
 message(STATUS "Configuring benchmark - done")
