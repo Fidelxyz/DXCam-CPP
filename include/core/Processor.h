@@ -7,10 +7,6 @@
 
 #include <dxgi.h>
 
-#include <functional>
-#include <map>
-#include <string>
-
 #include "Region.h"
 #include "opencv2/opencv.hpp"
 
@@ -20,10 +16,10 @@ class Processor {
 public:
     Processor() = default;
 
-    cv::Mat process(const DXGI_MAPPED_RECT &rect, int width, int height,
-                    const Region &region, int rotation_angle);
+    static cv::Mat process(const DXGI_MAPPED_RECT &rect, int width, int height,
+                           const Region &region, int rotation_angle);
 };
 
 }  // namespace DXCam
 
-#endif  //DXCAM_CPP_PROCESSOR_H
+#endif  // DXCAM_CPP_PROCESSOR_H

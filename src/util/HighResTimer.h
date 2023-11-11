@@ -9,12 +9,12 @@
 
 class HighResTimer {
 public:
-    HighResTimer(const int period_ms);
+    explicit HighResTimer(int period_ms);
     void wait() const;
     void cancel() const;
 
 private:
-    const HANDLE handle;
+    HANDLE handle;
 };
 
 

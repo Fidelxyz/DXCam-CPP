@@ -28,6 +28,10 @@ StageSurface::StageSurface(Output *const output, Device *const device)
         HRESULT hr = device->device->CreateTexture2D(&this->desc, nullptr,
                                                      &this->texture);
         assert(SUCCEEDED(hr));
+
+        hr = this->texture->QueryInterface(__uuidof(IDXGISurface),
+                                           reinterpret_cast<void **>(&surface));
+        assert(SUCCEEDED(hr));
     }
 }
 
@@ -39,25 +43,13 @@ StageSurface::~StageSurface() {
 }
 
 DXGI_MAPPED_RECT StageSurface::map() const {
-    IDXGISurface *surface = nullptr;
-    HRESULT hr = this->texture->QueryInterface(
-            __uuidof(IDXGISurface), reinterpret_cast<void **>(&surface));
-    assert(SUCCEEDED(hr));
-
     DXGI_MAPPED_RECT rect;
-    hr = surface->Map(&rect, DXGI_MAP_READ);
+    HRESULT hr = surface->Map(&rect, DXGI_MAP_READ);
     assert(SUCCEEDED(hr));
 
     return rect;
 }
 
-void StageSurface::unmap() const {
-    IDXGISurface *surface = nullptr;
-    HRESULT hr = this->texture->QueryInterface(
-            __uuidof(IDXGISurface), reinterpret_cast<void **>(&surface));
-    assert(SUCCEEDED(hr));
-
-    surface->Unmap();
-}
+void StageSurface::unmap() const { surface->Unmap(); }
 
 }  // namespace DXCam

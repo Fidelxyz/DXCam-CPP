@@ -53,6 +53,7 @@ cv::Mat DXCamera::grab(const Region &region) {
         auto frame = this->processor.process(rect, this->width, this->height,
                                              region, this->rotation_angle);
         this->stagesurf.unmap();
+        assert(!frame.empty());
         return frame;
     } else {
         this->on_output_change();
@@ -109,7 +110,7 @@ void DXCamera::capture(const Region &region, const int target_fps,
         throw std::invalid_argument("Target FPS should be greater than 0");
     }
 
-    const HighResTimer timer(1000.0 / target_fps);
+    const HighResTimer timer(static_cast<int>(1000.0 / target_fps));
 
     // for FPS statistics
     int frame_count = 0;
@@ -128,8 +129,8 @@ void DXCamera::capture(const Region &region, const int target_fps,
                                            static_cast<int>(max_buffer_len)];
             }
 
-            // The order of the following instructions is important
-            // for thread safety!
+            // The order of the following instructions is important for thread
+            // safety!
 
             // Move the head pointer.
             // This should be done before writing the frame.
@@ -165,6 +166,9 @@ void DXCamera::capture(const Region &region, const int target_fps,
 
     const auto capture_stop_time = std::chrono::steady_clock::now();
 
+    timer.cancel();
+
+    // compute FPS statistics
     const auto capture_duration = duration_cast<std::chrono::seconds>(
             capture_stop_time - capture_start_time);
     const double fps =

@@ -14,7 +14,7 @@ double bench(const std::shared_ptr<DXCam::DXCamera>& camera) {
     const auto begin_time = std::chrono::steady_clock::now();
     for (int i = 0; i < TOTAL_FRAMES;) {
         auto frame = camera->grab();
-        if (!frame.empty()) {                       // new frame
+        if (!frame.empty()) {
             volatile auto data = std::move(frame);  // avoid optimization
             i++;
         }

@@ -1,11 +1,18 @@
 # DXCam-CPP
 
-> Fastest Screenshot for Windows
-
 A high performance screen capturing library for Windows
 rewriting [DXcam](https://github.com/ra1nty/DXcam) in C++.
 
 STILL IN DEVELOPMENT.
+
+## TODO
+
+- [ ] Package as a Python module
+- [ ] Unit test (if possible)
+- [ ] Benchmark comparing with other libs
+- [ ] Github Actions
+
+Contributions are welcome!
 
 ## Usage
 
@@ -127,7 +134,7 @@ struct DXCam::OutputInfo {
 
 The captured frames will be insert into a fixed-size ring buffer, and when the
 buffer is full the newest frame will replace the oldest frame. You can specify
-the max buffer length (defualt to 64) using the argument `max_buffer_len` upon
+the max buffer length (default to 64) using the argument `max_buffer_len` upon
 creation of the `DXCamera` instance.
 
 ```cpp
@@ -182,7 +189,7 @@ buffer, which suits the usage scenario of a object detection/machine learning
 pipeline. However, when recording a video that is not ideal since we aim to get
 the frames at a constant framerate: When the `video_mode` argument is specified
 as `true` when calling `.start` method of a DXCamera instance, the frame buffer
-will be feeded at the target fps, using the last frame if there is no new frame
+will be fed at the target fps, using the last frame if there is no new frame
 available.
 
 ### Safely Releasing of Resource
@@ -196,7 +203,7 @@ refers to.
 Upon calling `.stop()`, DXCamera will stop the
 active capture and free the frame buffer. If you want to manually recreate a
 DXCamera instance on the same output with different parameters, you can also
-manully `delete` it:
+manually `delete` it:
 
 ```cpp
 std::shared_ptr<DXCam::DXCamera> camera1 = DXCam::create(0);
@@ -215,7 +222,7 @@ capturing region of 1920x1080._
 
 ### For Max FPS Capability
 
-10000 loops, best of 5: **205996.559857 FPS**
+10000 loops, best of 5: **208466.230555 FPS**
 
 I am not sure if this result is correct (capturing is not optimized away),
 although I have no evidence to prove it is wrong. You can see the code for
@@ -233,7 +240,3 @@ please notify me.
 | 180        | 183.247031, 0.001520                  |
 | 240        | 228.854428, 0.001356                  |
 | 360        | 413.697012, 0.000989                  |
-
-## TODO
-
-- [ ] Package this library as a Python module
