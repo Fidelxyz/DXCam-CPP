@@ -40,7 +40,7 @@ bool Duplicator::update_frame() {
     HRESULT hr = this->duplicator->AcquireNextFrame(0, &info, &res);
     if (hr == DXGI_ERROR_ACCESS_LOST) { return false; }
     if (hr == DXGI_ERROR_WAIT_TIMEOUT) {
-        this->updated = true;
+        this->updated = false;
         return true;
     }
     assert(SUCCEEDED(hr));
