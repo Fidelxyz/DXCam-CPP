@@ -5,12 +5,17 @@ rewriting [DXcam](https://github.com/ra1nty/DXcam) in C++.
 
 STILL IN DEVELOPMENT.
 
-## TODO
+## Features
 
-- [ ] Package as a Python module
-- [ ] Unit test (if possible)
-- [ ] Benchmark comparing with other libs
-- [ ] Github Actions
+- C++ Static Library
+
+### TODO
+
+- Python Support [WIP]
+- Benchmark comparing with other libs
+- Formal documentation (Doxygen)
+- Github Actions
+- Unit test (if possible)
 
 Contributions are welcome!
 
@@ -208,7 +213,7 @@ manually `delete` it:
 ```cpp
 std::shared_ptr<DXCam::DXCamera> camera1 = DXCam::create(0);
 std::shared_ptr<DXCam::DXCamera> camera2 = DXCam::create(0);  // Not allowed, camera1 will be returned
-assert(camera1.get() == camera2.get());
+assert(camera1 == camera2);
 delete camera1, camera2;
 camera2 = DXCam::create(0);  // Allowed
 ```

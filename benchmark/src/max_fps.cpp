@@ -7,8 +7,8 @@
 // params
 const std::string TITLE = "[Benchmark] max_fps";
 const auto REGION = DXCam::Region{0, 0, 1920, 1080};
-const int TOTAL_FRAMES = 10000;
-const int REPEAT = 5;
+const int TOTAL_FRAMES = 100;
+const int REPEATS = 5;
 
 double bench(const std::shared_ptr<DXCam::DXCamera>& camera) {
     const auto begin_time = std::chrono::steady_clock::now();
@@ -30,15 +30,15 @@ int main() {
 
     // benchmark
     double duration = std::numeric_limits<double>::max();
-    for (int i = 0; i < REPEAT; i++) {
-        printf("Bench [%d / %d]\n", i + 1, REPEAT);
+    for (int i = 0; i < REPEATS; i++) {
+        printf("Bench [%d / %d]\n", i + 1, REPEATS);
         duration = std::min(duration, bench(camera));
     }
 
     // result
     const auto fps = TOTAL_FRAMES / duration;
     printf("%s: %d loops, best of %d: %lf FPS\n", TITLE.c_str(), TOTAL_FRAMES,
-           REPEAT, fps);
+           REPEATS, fps);
 
     return 0;
 }

@@ -12,7 +12,6 @@
 const std::string TITLE = "[Benchmark] target_fps";
 const auto REGION = DXCam::Region{0, 0, 1920, 1080};
 const int DURATION = 5;
-const int REPEAT = 5;
 const int TARGET_FPS[] = {30, 60, 90, 120, 180, 240, 360};
 
 std::tuple<double, double> bench(const std::shared_ptr<DXCam::DXCamera> &camera,
