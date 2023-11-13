@@ -7,6 +7,7 @@ project(DXCam_CPP
 # Configuration options
 set(BUILD_BENCHMARKS ON CACHE BOOL "Build benchmarks")
 set(BUILD_EXAMPLES ON CACHE BOOL "Build examples")
+set(BUILD_PYTHON ON CACHE BOOL "Build Python bindings")
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -70,6 +71,7 @@ target_include_directories(DXCam
 target_link_libraries(DXCam
         PUBLIC d3d11 dxgi ${OpenCV_LIBS})
 
+# Collect DLLs
 add_custom_command(TARGET DXCam POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:DXCam> $<TARGET_RUNTIME_DLLS:DXCam>
         COMMAND_EXPAND_LISTS
@@ -83,4 +85,8 @@ endif ()
 
 if (BUILD_EXAMPLES)
     add_subdirectory(examples)
+endif ()
+
+if (BUILD_PYTHON)
+    add_subdirectory(python)
 endif ()
