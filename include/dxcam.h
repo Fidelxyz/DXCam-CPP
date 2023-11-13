@@ -47,6 +47,11 @@ namespace DXCam {
  * @return A vector of DeviceInfo.
  */
 [[maybe_unused]] std::vector<DeviceInfo> get_devices_info();
+/**
+ * @brief List all outputs.
+ * @return A vector of vector of OutputInfo. The first dimension represents each
+ * device, and the second dimension represents each output of that device.
+ */
 [[maybe_unused]] std::vector<std::vector<OutputInfo>> get_outputs_info();
 
 }  // namespace DXCam

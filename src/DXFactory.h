@@ -17,7 +17,7 @@ namespace DXCam {
 
 class DXFactory {
 public:
-    DXFactory();
+    DXFactory() = default;
 
     std::shared_ptr<DXCamera> create(int device_idx = 0, int output_idx = -1,
                                      size_t max_buffer_len = 64);
@@ -25,21 +25,24 @@ public:
                                      int output_idx = -1,
                                      size_t max_buffer_len = 64);
 
-    [[nodiscard]] std::vector<DeviceInfo> get_devices_info() const;
-    [[nodiscard]] std::vector<std::vector<OutputInfo>> get_outputs_info() const;
+    [[nodiscard]] std::vector<DeviceInfo> get_devices_info();
+    [[nodiscard]] std::vector<std::vector<OutputInfo>> get_outputs_info();
 
     std::vector<Device> devices;
     std::vector<std::vector<Output>> outputs;
     OutputMetadata output_metadata;
 
 private:
+    void init();
+
     [[nodiscard]] int find_primary_output_idx(int device_idx) const;
     [[nodiscard]] std::shared_ptr<DXCamera> find_instant(int device_idx,
                                                          int output_idx);
 
+    bool is_initialized = false;
     std::map<std::tuple<int, int>, std::weak_ptr<DXCamera>> camera_instants;
 };
 
 }  // namespace DXCam
 
-#endif  //DXCAM_CPP_DXFACTORY_H
+#endif  // DXCAM_CPP_DXFACTORY_H

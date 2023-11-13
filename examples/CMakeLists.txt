@@ -1,9 +1,8 @@
-project(DXCam_CPP_examples)
-
 message(STATUS "Configuring examples")
 
-add_executable(screenshot src/screenshot.cpp)
-target_link_libraries(screenshot DXCam ${OpenCV_LIBS})
-add_dependencies(screenshot DXCam)
+add_executable(example_screenshot screenshot.cpp)
+target_include_directories(example_screenshot PRIVATE ../include)
+target_link_libraries(example_screenshot DXCam dxgi d3d11 ${OpenCV_LIBS})
+add_dependencies(example_screenshot DXCam)
 
 message(STATUS "Configuring examples - done")

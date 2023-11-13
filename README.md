@@ -7,7 +7,7 @@ STILL IN DEVELOPMENT.
 
 ## Features
 
-- C++ Static Library
+- C++ Dynamic Library
 
 ### TODO
 
@@ -24,14 +24,14 @@ Contributions are welcome!
 Include `dxcam.h` in your project:
 
 ```cpp
-#include "dxcam.h"
+#include <dxcam/dxcam.h>
 ```
 
 [OpenCV](https://github.com/opencv/opencv) is also required, since the
 screenshot is returned as a `cv::Mat` object.
 
 ```cpp
-#include "opencv2/opencv.hpp"
+#include <opencv2/opencv.hpp>
 ```
 
 Everything provided by DXCam_CPP is in the `DXCam` namespace.

@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.26)
-project(DXCam_CPP)
+project(DXCam_CPP
+        VERSION 0.0.1
+        LANGUAGES CXX
+)
+
+# Configuration options
+set(BUILD_BENCHMARKS ON CACHE BOOL "Build benchmarks")
+set(BUILD_EXAMPLES ON CACHE BOOL "Build examples")
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -9,12 +16,15 @@ if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 endif ()
 
 message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+
 message(STATUS "Configuring DXCam_CPP")
 
 # Set target directories
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
+
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 # Set compiler options
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -26,11 +36,7 @@ endif ()
 
 find_package(OpenCV REQUIRED)
 
-include_directories(include src
-        ${OpenCV_INCLUDE_DIRS}
-)
-
-add_library(DXCam STATIC
+add_library(DXCam SHARED
         include/core/Device.h
         include/core/DeviceInfo.h
         include/core/Duplicator.h
@@ -41,7 +47,6 @@ add_library(DXCam STATIC
         include/core/StageSurface.h
         include/dxcam.h
         include/DXCamera.h
-        src/DXFactory.h
         src/core/Device.cpp
         src/core/Duplicator.cpp
         src/core/Output.cpp
@@ -50,23 +55,32 @@ add_library(DXCam STATIC
         src/core/Processor.cpp
         src/core/Region.cpp
         src/core/StageSurface.cpp
+        src/util/HighResTimer.cpp
         src/util/io.cpp
         src/util/io.h
         src/dxcam.cpp
         src/DXCamera.cpp
         src/DXFactory.cpp
-        include/core/DeviceInfo.h
-        include/core/OutputInfo.h
-        examples/src/screenshot.cpp
-        src/util/HighResTimer.cpp
-        src/util/HighResTimer.h)
-
+        src/DXFactory.h
+)
+target_include_directories(DXCam
+        PRIVATE src
+        PUBLIC include ${OpenCV_INCLUDE_DIRS}
+)
 target_link_libraries(DXCam
-        d3d11
-        dxgi
-        ${OpenCV_LIBS})
+        PUBLIC d3d11 dxgi ${OpenCV_LIBS})
+
+add_custom_command(TARGET DXCam POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:DXCam> $<TARGET_RUNTIME_DLLS:DXCam>
+        COMMAND_EXPAND_LISTS
+)
 
 message(STATUS "Configuring DXCam_CPP - done")
 
-add_subdirectory(benchmark)
-add_subdirectory(examples)
+if (BUILD_BENCHMARKS)
+    add_subdirectory(benchmarks)
+endif ()
+
+if (BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif ()

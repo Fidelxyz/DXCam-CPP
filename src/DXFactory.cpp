@@ -10,7 +10,9 @@
 
 namespace DXCam {
 
-DXFactory::DXFactory() {
+void DXFactory::init() {
+    if (this->is_initialized) { return; }
+
     const auto p_adapters = enum_dxgi_adapters();
     for (const auto &p_adapter: p_adapters) {
         auto device = Device(p_adapter);
@@ -23,11 +25,15 @@ DXFactory::DXFactory() {
         }
     }
     this->output_metadata = get_output_metadata();
+
+    this->is_initialized = true;
 }
 
 std::shared_ptr<DXCamera> DXFactory::create(const int device_idx,
                                             int output_idx,
                                             const size_t max_buffer_len) {
+    this->init();
+
     if (output_idx == -1) {
         output_idx = this->find_primary_output_idx(device_idx);
     }
@@ -60,6 +66,8 @@ std::shared_ptr<DXCamera> DXFactory::create(const Region &region,
                                             const int device_idx,
                                             int output_idx,
                                             const size_t max_buffer_len) {
+    this->init();
+
     if (output_idx == -1) {
         output_idx = this->find_primary_output_idx(device_idx);
     }
@@ -84,7 +92,9 @@ std::shared_ptr<DXCamera> DXFactory::create(const Region &region,
     return camera;
 }
 
-std::vector<DeviceInfo> DXFactory::get_devices_info() const {
+std::vector<DeviceInfo> DXFactory::get_devices_info() {
+    this->init();
+
     std::vector<DeviceInfo> devices_info;
     for (const auto &device: this->devices) {
         devices_info.emplace_back(device.get_info());
@@ -92,7 +102,9 @@ std::vector<DeviceInfo> DXFactory::get_devices_info() const {
     return devices_info;
 }
 
-std::vector<std::vector<OutputInfo>> DXFactory::get_outputs_info() const {
+std::vector<std::vector<OutputInfo>> DXFactory::get_outputs_info() {
+    this->init();
+
     std::vector<std::vector<OutputInfo>> outputs_info;
     for (const auto &device_outputs: this->outputs) {
         std::vector<OutputInfo> device_outputs_info;

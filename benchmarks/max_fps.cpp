@@ -28,7 +28,7 @@ int main() {
     // init
     auto camera = DXCam::create(REGION);
 
-    // benchmark
+    // benchmarks
     double duration = std::numeric_limits<double>::max();
     for (int i = 0; i < REPEATS; i++) {
         printf("Bench [%d / %d]\n", i + 1, REPEATS);
