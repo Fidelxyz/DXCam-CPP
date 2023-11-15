@@ -19,7 +19,7 @@ std::tuple<double, double> bench(const std::shared_ptr<DXCam::DXCamera> &camera,
     const int total_frames = target_fps * DURATION;
     double square_sum = 0;
 
-    camera->start(target_fps);
+    camera->start(target_fps, true);
 
     const auto begin_time = std::chrono::steady_clock::now();
     auto last_frame_time = begin_time;

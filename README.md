@@ -208,40 +208,19 @@ refers to.
 Upon calling `.stop()`, DXCamera will stop the
 active capture and free the frame buffer. If you want to manually recreate a
 DXCamera instance on the same output with different parameters, you can also
-manually `delete` it:
+manually delete it by calling `.reset()`:
 
 ```cpp
 std::shared_ptr<DXCam::DXCamera> camera1 = DXCam::create(0);
 std::shared_ptr<DXCam::DXCamera> camera2 = DXCam::create(0);  // Not allowed, camera1 will be returned
 assert(camera1 == camera2);
-delete camera1, camera2;
-camera2 = DXCam::create(0);  // Allowed
+camera1.reset();
+camera2.reset(DXCam::create(0));  // Allowed
 ```
 
 ## Benchmarks
 
-> To be completed.
+> Benchmark is not available currently, due to some unresolved issues.
 
 _Data obtained from running on my Laptop (i7-11800H & RTX 3060 Laptop), which a
 capturing region of 1920x1080._
-
-### For Max FPS Capability
-
-10000 loops, best of 5: **208466.230555 FPS**
-
-I am not sure if this result is correct (capturing is not optimized away),
-although I have no evidence to prove it is wrong. You can see the code for
-benchmark in `benchmark/src/max_fps.cpp`. If anyone have an idea about this,
-please notify me.
-
-### For Targeting FPS
-
-| Target FPS | mean(FPS), std(Frame Generation Time) |
-|------------|---------------------------------------|
-| 30         | 30.105708, 0.003644                   |
-| 60         | 61.469291, 0.002615                   |
-| 90         | 88.202446, 0.002124                   |
-| 120        | 119.426397, 0.001867                  |
-| 180        | 183.247031, 0.001520                  |
-| 240        | 228.854428, 0.001356                  |
-| 360        | 413.697012, 0.000989                  |

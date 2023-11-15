@@ -20,9 +20,8 @@ namespace DXCam {
  * instance with the same device and output, the shared pointer to the existing
  * instance will be returned.
  */
-[[maybe_unused]] std::shared_ptr<DXCamera> create(int device_idx = 0,
-                                                  int output_idx = -1,
-                                                  size_t max_buffer_len = 64);
+[[maybe_unused]] DXCAM_EXPORT std::shared_ptr<DXCamera> create(
+        int device_idx = 0, int output_idx = -1, size_t max_buffer_len = 64);
 
 /**
  * @brief Create a DXCamera instance which captures a rectangle region by
@@ -37,22 +36,22 @@ namespace DXCam {
  * instance with the same device and output, the shared pointer to the existing
  * instance will be returned.
  */
-[[maybe_unused]] std::shared_ptr<DXCamera> create(const Region &region,
-                                                  int device_idx = 0,
-                                                  int output_idx = -1,
-                                                  size_t max_buffer_len = 64);
+[[maybe_unused]] DXCAM_EXPORT std::shared_ptr<DXCamera> create(
+        const Region &region, int device_idx = 0, int output_idx = -1,
+        size_t max_buffer_len = 64);
 
 /**
  * @brief List all devices.
  * @return A vector of DeviceInfo.
  */
-[[maybe_unused]] std::vector<DeviceInfo> get_devices_info();
+[[maybe_unused]] DXCAM_EXPORT std::vector<DeviceInfo> get_devices_info();
 /**
  * @brief List all outputs.
  * @return A vector of vector of OutputInfo. The first dimension represents each
  * device, and the second dimension represents each output of that device.
  */
-[[maybe_unused]] std::vector<std::vector<OutputInfo>> get_outputs_info();
+[[maybe_unused]] DXCAM_EXPORT std::vector<std::vector<OutputInfo>>
+get_outputs_info();
 
 }  // namespace DXCam
 
