@@ -11,6 +11,7 @@
 #include "core/Processor.h"
 #include "core/Region.h"
 #include "core/StageSurface.h"
+#include "dxcam_export.h"
 
 namespace DXCam {
 
@@ -25,14 +26,14 @@ public:
      *
      * @return a Mat object, containing the captured image.
      */
-    [[maybe_unused]] cv::Mat grab();
+    [[maybe_unused]] DXCAM_EXPORT cv::Mat grab();
     /**
      * @brief Capture the specified region instantly.
      *
      * @param [in] region The rectangle region to be captured.
      * @return a Mat object, containing the captured image.
      */
-    [[maybe_unused]] cv::Mat grab(const Region &region);
+    [[maybe_unused]] DXCAM_EXPORT cv::Mat grab(const Region &region);
 
     /**
      * @brief Start capturing the default region.
@@ -43,8 +44,9 @@ public:
      * If false, only new frames will be pushed to the frame buffer.
      * @param [in] delay The delay in seconds before capturing starts.
      */
-    [[maybe_unused]] void start(int target_fps = 60, bool video_mode = false,
-                                int delay = 0);
+    [[maybe_unused]] DXCAM_EXPORT void start(int target_fps = 60,
+                                             bool video_mode = false,
+                                             int delay = 0);
     /**
      * @brief Start capturing the specified region.
      *
@@ -55,20 +57,22 @@ public:
      * If false, only new frames will be pushed to the frame buffer.
      * @param [in] delay The delay in seconds before capturing starts.
      */
-    [[maybe_unused]] void start(const Region &region, int target_fps = 60,
-                                bool video_mode = false, int delay = 0);
+    [[maybe_unused]] DXCAM_EXPORT void start(const Region &region,
+                                             int target_fps = 60,
+                                             bool video_mode = false,
+                                             int delay = 0);
 
     /**
      * @brief Stop capturing.
      */
-    [[maybe_unused]] void stop();
+    [[maybe_unused]] DXCAM_EXPORT void stop();
 
     /**
      * @brief Get the latest frame in the frame buffer.
      *
      * @return a Mat object, containing the latest frame in the frame buffer.
      */
-    [[maybe_unused]] cv::Mat get_latest_frame();
+    [[maybe_unused]] DXCAM_EXPORT cv::Mat get_latest_frame();
 
     /**
      * @brief Get the pointers to access the frame buffer, which is a circular
@@ -92,7 +96,7 @@ public:
      * @param [out] frame_buffer_all_mutex The pointer to the mutex of the frame
      * buffer.
      */
-    [[maybe_unused]] void get_frame_buffer(
+    [[maybe_unused]] DXCAM_EXPORT void get_frame_buffer(
             const cv::Mat *const **frame_buffer,
             std::mutex *const **frame_buffer_mutex, const size_t **len,
             const std::atomic<int> **head, const std::atomic<int> **tail,

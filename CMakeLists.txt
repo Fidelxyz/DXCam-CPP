@@ -7,6 +7,7 @@ project(DXCam_CPP
 # Configuration options
 set(BUILD_BENCHMARKS ON CACHE BOOL "Build benchmarks")
 set(BUILD_EXAMPLES ON CACHE BOOL "Build examples")
+set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Installation Directory" FORCE)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -20,11 +21,9 @@ message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Configuring DXCam_CPP")
 
 # Set target directories
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
-
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Set compiler options
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -34,9 +33,13 @@ else ()
     add_link_options(/LTCG)
 endif ()
 
+include(GenerateExportHeader)
+
 find_package(OpenCV REQUIRED)
 
+# DXCam
 add_library(DXCam SHARED
+        ${PROJECT_BINARY_DIR}/exports/dxcam_export.h
         include/core/Device.h
         include/core/DeviceInfo.h
         include/core/Duplicator.h
@@ -65,14 +68,30 @@ add_library(DXCam SHARED
 )
 target_include_directories(DXCam
         PRIVATE src
-        PUBLIC include ${OpenCV_INCLUDE_DIRS}
+        PUBLIC include ${PROJECT_BINARY_DIR}/exports ${OpenCV_INCLUDE_DIRS}
 )
 target_link_libraries(DXCam
-        PUBLIC d3d11 dxgi ${OpenCV_LIBS})
+        PUBLIC d3d11 dxgi ${OpenCV_LIBS}
+)
+generate_export_header(DXCam
+        EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/exports/dxcam_export.h
+)
 
-add_custom_command(TARGET DXCam POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:DXCam> $<TARGET_RUNTIME_DLLS:DXCam>
-        COMMAND_EXPAND_LISTS
+# Install
+install(TARGETS DXCam
+        EXPORT DXCamTargets
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+)
+install(DIRECTORY include
+        DESTINATION .
+)
+install(FILES ${PROJECT_BINARY_DIR}/exports/dxcam_export.h
+        DESTINATION include
+)
+install(FILES $<TARGET_RUNTIME_DLLS:DXCam>
+        DESTINATION bin
 )
 
 message(STATUS "Configuring DXCam_CPP - done")

@@ -99,7 +99,8 @@ cv::Mat DXCamera::get_latest_frame() {
     this->frame_available.wait(false);
     this->frame_available = false;
 
-    auto frame_idx = (this->head - 1) % this->max_buffer_len;
+    auto frame_idx =
+            (this->head - 1 + this->max_buffer_len) % this->max_buffer_len;
     std::scoped_lock lock(this->frame_buffer_mutex[frame_idx]);
     return this->frame_buffer[frame_idx];
 }
@@ -125,7 +126,7 @@ void DXCamera::capture(const Region &region, const int target_fps,
             std::scoped_lock lock_all(this->frame_buffer_all_mutex);
 
             if (video_mode && frame.empty()) {
-                frame = this->frame_buffer[(this->tail - 1) %
+                frame = this->frame_buffer[(this->tail - 1 + max_buffer_len) %
                                            static_cast<int>(max_buffer_len)];
             }
 
