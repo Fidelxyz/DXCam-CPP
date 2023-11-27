@@ -1,12 +1,7 @@
 //
-// Created by Fidel on 2023/11/12.
+// Created by Fidel on 2023/11/26.
 //
-#include <pybind11/pybind11.h>
-
-#include "dxcam.h"
-#include "util/string.h"
-
-namespace py = pybind11;
+#include "py_dxcam.h"
 
 std::string device_info() {
     const auto info = DXCam::get_devices_info();
@@ -37,9 +32,22 @@ std::string output_info() {
     return ret;
 }
 
-PYBIND11_MODULE(dxcam_cpp, m) {
-    m.doc() = "DXCam-CPP warpped in Python";
+std::shared_ptr<DXCamera> create(int device_idx,
+                                 const std::optional<int> output_idx,
+                                 const std::optional<py::tuple> &region,
+                                 const std::string &output_color,
+                                 size_t max_buffer_len) {
+    if (!region) {
+        return std::make_shared<DXCamera>(
+                DXCam::create(device_idx, output_idx.value_or(-1),
+                              max_buffer_len),
+                output_color);
+    }
 
-    m.def("device_info", &device_info, "List all outputs.");
-    m.def("output_info", &output_info, "List all outputs.");
+    return std::make_shared<DXCamera>(
+            DXCam::create(
+                    std::make_from_tuple<DXCam::Region>(
+                            py::cast<std::tuple<int, int, int, int>>(*region)),
+                    device_idx, output_idx.value_or(-1), max_buffer_len),
+            output_color);
 }

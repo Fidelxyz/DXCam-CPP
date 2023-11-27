@@ -19,7 +19,9 @@ class DXCamera {
 public:
     DXCamera(Output *output, Device *device, const Region &region,
              bool region_set_by_user, size_t max_buffer_len = 64);
-    ~DXCamera();
+    DXCAM_EXPORT ~DXCamera();
+
+    DXCamera(const DXCamera &) = delete;  // disable copy constructor
 
     /**
      * @brief Capture the default region instantly.

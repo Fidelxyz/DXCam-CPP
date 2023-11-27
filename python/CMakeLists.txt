@@ -5,7 +5,11 @@ add_subdirectory(pybind11)
 pybind11_add_module(dxcam_cpp MODULE
         src/util/string.cpp
         src/util/string.h
+        src/py_bindings.cpp
         src/py_dxcam.cpp
+        src/py_dxcam.h
+        src/py_DXCamera.cpp
+        src/py_DXCamera.h
 )
 target_link_libraries(dxcam_cpp PRIVATE DXCam)
 add_dependencies(dxcam_cpp DXCam)
