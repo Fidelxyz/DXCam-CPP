@@ -1,6 +1,3 @@
-//
-// Created by Fidel on 2023/11/12.
-//
 #ifndef DXCAM_CPP_PY_DXCAM_H
 #define DXCAM_CPP_PY_DXCAM_H
 

@@ -1,7 +1,3 @@
-//
-// Created by Fidel on 2023/11/16.
-//
-
 #ifndef DXCAM_CPP_PY_DXCAMERA_H
 #define DXCAM_CPP_PY_DXCAMERA_H
 
@@ -19,13 +15,29 @@ public:
     DXCamera(std::shared_ptr<DXCam::DXCamera> &&camera,
              const std::string &output_color);
 
-    py::array_t<uint8_t> grab();
+    void release();
+
+    [[nodiscard]] py::array_t<uint8_t> grab(
+            const std::optional<py::tuple> &region) const;
+
+    void start(const std::optional<py::tuple> &region, int target_fps,
+               bool video_mode, int delay) const;
+    void stop() const;
+    [[nodiscard]] py::array_t<uint8_t> get_latest_frame() const;
+
+    [[nodiscard]] int get_width() const;
+    [[nodiscard]] int get_height() const;
+    [[nodiscard]] int get_channel_size() const;
+    [[nodiscard]] int get_rotation_angle() const;
+    [[nodiscard]] py::tuple get_region() const;
+    [[nodiscard]] size_t get_max_buffer_len() const;
+    [[nodiscard]] bool is_capturing() const;
 
 private:
-    std::shared_ptr<DXCam::DXCamera> camera;
-    static std::unordered_map<void *, cv::Mat *> frame_map;
+    static py::array_t<uint8_t> numpy_array_from(cv::Mat &&mat);
 
-    cv::ColorConversionCodes cvt_color_flag;
+    std::shared_ptr<DXCam::DXCamera> camera;
+    const cv::ColorConversionCodes cvt_color_flag;
     const static std::unordered_map<std::string, cv::ColorConversionCodes>
             cvt_color_flag_map;
 };

@@ -1,6 +1,3 @@
-//
-// Created by Fidel on 2023/11/26.
-//
 #include "py_dxcam.h"
 
 std::string device_info() {
@@ -37,17 +34,17 @@ std::shared_ptr<DXCamera> create(int device_idx,
                                  const std::optional<py::tuple> &region,
                                  const std::string &output_color,
                                  size_t max_buffer_len) {
+    auto output_idx_ = output_idx.value_or(-1);
+
     if (!region) {
         return std::make_shared<DXCamera>(
-                DXCam::create(device_idx, output_idx.value_or(-1),
-                              max_buffer_len),
+                DXCam::create(device_idx, output_idx_, max_buffer_len),
                 output_color);
     }
 
+    auto region_ = std::make_from_tuple<DXCam::Region>(
+            py::cast<std::tuple<int, int, int, int>>(*region));
     return std::make_shared<DXCamera>(
-            DXCam::create(
-                    std::make_from_tuple<DXCam::Region>(
-                            py::cast<std::tuple<int, int, int, int>>(*region)),
-                    device_idx, output_idx.value_or(-1), max_buffer_len),
+            DXCam::create(region_, device_idx, output_idx_, max_buffer_len),
             output_color);
 }

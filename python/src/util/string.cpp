@@ -1,7 +1,3 @@
-//
-// Created by Fidel on 2023/11/12.
-//
-
 #include "string.h"
 
 #include <Windows.h>

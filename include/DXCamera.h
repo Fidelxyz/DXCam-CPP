@@ -21,7 +21,9 @@ public:
              bool region_set_by_user, size_t max_buffer_len = 64);
     DXCAM_EXPORT ~DXCamera();
 
-    DXCamera(const DXCamera &) = delete;  // disable copy constructor
+    // Disallow copy and assign
+    DXCamera(const DXCamera &) = delete;
+    DXCamera &operator=(const DXCamera &) = delete;
 
     /**
      * @brief Capture the default region instantly.
@@ -108,6 +110,7 @@ public:
     long width = 0;
     long height = 0;
     int rotation_angle;
+    Region region;
     size_t max_buffer_len;
     bool is_capturing = false;
 
@@ -127,7 +130,6 @@ private:
     Duplicator duplicator;
     Processor processor;
 
-    Region region;
     bool region_set_by_user;
 
     std::mutex frame_buffer_all_mutex;
