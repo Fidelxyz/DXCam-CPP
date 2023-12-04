@@ -7,6 +7,7 @@ project(DXCam_CPP
 # Configuration options
 set(BUILD_BENCHMARKS ON CACHE BOOL "Build benchmarks")
 set(BUILD_EXAMPLES ON CACHE BOOL "Build examples")
+set(BUILD_PYTHON ON CACHE BOOL "Build Python bindings")
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Installation Directory" FORCE)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -102,4 +103,8 @@ endif ()
 
 if (BUILD_EXAMPLES)
     add_subdirectory(examples)
+endif ()
+
+if (BUILD_PYTHON)
+    add_subdirectory(python)
 endif ()

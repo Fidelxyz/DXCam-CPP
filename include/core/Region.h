@@ -19,4 +19,4 @@ public:
 
 }  // namespace DXCam
 
-#endif  //DXCAM_CPP_REGION_H
+#endif  // DXCAM_CPP_REGION_H
