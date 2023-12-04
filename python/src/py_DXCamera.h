@@ -17,7 +17,7 @@ public:
 
     void release();
 
-    [[nodiscard]] py::array_t<uint8_t> grab(
+    [[nodiscard]] std::optional<py::array_t<uint8_t>> grab(
             const std::optional<py::tuple> &region) const;
 
     void start(const std::optional<py::tuple> &region, int target_fps,

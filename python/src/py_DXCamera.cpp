@@ -37,7 +37,7 @@ py::array_t<uint8_t> DXCamera::numpy_array_from(cv::Mat &&mat) {
     }
 }
 
-py::array_t<uint8_t> DXCamera::grab(
+std::optional<py::array_t<uint8_t>> DXCamera::grab(
         const std::optional<py::tuple> &region) const {
     cv::Mat frame;
     if (!region) {
@@ -47,6 +47,8 @@ py::array_t<uint8_t> DXCamera::grab(
                 py::cast<std::tuple<int, int, int, int>>(*region));
         frame = this->camera->grab(region_);
     }
+
+    if (frame.empty()) { return std::nullopt; }
 
     if (this->cvt_color_flag != cv::COLOR_COLORCVT_MAX) {
         cv::cvtColor(frame, frame, cvt_color_flag);
