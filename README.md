@@ -8,10 +8,10 @@ STILL IN DEVELOPMENT.
 ## Features
 
 - C++ Dynamic Library
+- Python Module (Compatible with the original Python DXcam as an alternative)
 
 ### TODO
 
-- Python Support [WIP]
 - Benchmark comparing with other libs
 - Formal documentation (Doxygen)
 - Github Actions
@@ -19,7 +19,16 @@ STILL IN DEVELOPMENT.
 
 Contributions are welcome!
 
-## Usage
+## Usage as a Python Module
+
+The interface of the Python module of DXCam_CPP is designed to be **fully
+compatible** with the original Python DXcam as an alternative.
+See [the documentation of DXcam](https://github.com/ra1nty/DXcam?tab=readme-ov-file#usage)
+for more details.
+
+> Working in progress
+
+## Usage as a C++ Library
 
 Include `dxcam.h` in your project:
 
@@ -222,5 +231,6 @@ camera2.reset(DXCam::create(0));  // Allowed
 
 > Benchmark is not available currently, due to some unresolved issues.
 
-_Data obtained from running on my Laptop (i7-11800H & RTX 3060 Laptop), which a
-capturing region of 1920x1080._
+_Data obtained from running on my Laptop (i7-11800H & RTX 3060 Laptop)
+with [**UFO Test**](https://www.testufo.com/), which a capturing region of
+1920x1080._

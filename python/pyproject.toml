@@ -1,0 +1,37 @@
+[build-system]
+requires = [
+    "setuptools",
+    "mypy"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dxcam_cpp"
+version = "0.1.0"
+requires-python = ">=3.7"
+authors = [
+    { name = "Fidel Yin", email = "fidel.yin@hotmail.com" }
+]
+description = "A high performance screen capturing library for Windows"
+keywords = ["windows", "screenshot", "capture"]
+license = { text = "MIT License" }
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: C++",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: Microsoft :: Windows :: Windows 10",
+    "Operating System :: Microsoft :: Windows :: Windows 11",
+    "Intended Audience :: Developers",
+    "Topic :: Multimedia :: Graphics :: Capture",
+    "Topic :: Multimedia :: Graphics :: Capture :: Screen Capture",
+]
+
+[project.urls]
+Homepage = "https://github.com/Fidelxyz/DXCam-CPP"
+Repository = "https://github.com/Fidelxyz/DXCam-CPP"
+Issues = "https://github.com/Fidelxyz/DXCam-CPP/issues"
+
+[tool.cibuildwheel]
+archs = ["AMD64"]
+build = ["cp*"]

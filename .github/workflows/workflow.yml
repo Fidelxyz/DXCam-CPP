@@ -1,0 +1,125 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  release:
+    types: [ published ]
+
+env:
+  PROJECT_NAME: "DXCam_CPP"
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        build_type: [ "Debug", "Release", "RelWithDebInfo" ]
+
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Ninja
+        run: choco install ninja -y
+
+      - name: Cache OpenCV
+        id: cache-opencv
+        uses: actions/cache@v3
+        with:
+          path: C:/Tools/opencv
+          key: ${{runner.os}}-opencv
+
+      - name: Setup OpenCV
+        if: steps.cache-opencv.outputs.cache-hit != 'true'
+        run: choco install opencv -y
+
+      - name: Enable Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure CMake
+        run: >-
+          cmake
+          -B ${{github.workspace}}/build
+          -G Ninja
+          "-DCMAKE_C_COMPILER=cl.exe"
+          "-DCMAKE_CXX_COMPILER=cl.exe"
+          -DOpenCV_DIR=C:/Tools/opencv/build
+          -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+
+      - name: Install
+        run: cmake --install ${{github.workspace}}/build --config ${{matrix.build_type}}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{env.PROJECT_NAME}}-${{matrix.build_type}}
+          path: ${{github.workspace}}/build/install
+
+  build-wheels:
+    needs: [ build ]
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{env.PROJECT_NAME}}-Release
+          path: ${{github.workspace}}/build/install
+
+      - name: Cache OpenCV
+        id: cache-opencv
+        uses: actions/cache@v3
+        with:
+          path: C:/Tools/opencv
+          key: ${{runner.os}}-opencv
+
+      - name: Setup OpenCV
+        if: steps.cache-opencv.outputs.cache-hit != 'true'
+        run: choco install opencv -y
+
+      - name: Cache cibuildwheel
+        id: cache-cibuildwheel
+        uses: actions/cache@v3
+        with:
+          path: D:/cache/cibuildwheel
+          key: ${{runner.os}}-cibuildwheel
+
+      - name: Build Python Wheels
+        uses: pypa/cibuildwheel@v2.16.2
+        env:
+          CMAKE_ARGS: >-
+            -DDXCam_DIR=${{github.workspace}}/build/install
+            -DOpenCV_DIR=C:/Tools/opencv/build
+          CIBW_CACHE_PATH: D:/cache/cibuildwheel
+        with:
+          package-dir: ${{github.workspace}}/python
+          output-dir: ${{github.workspace}}/python/wheelhouse
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{env.PROJECT_NAME}}-wheels
+          path: ${{github.workspace}}/python/wheelhouse
+
+  upload_pypi:
+    needs: [ build-wheels ]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    if: github.event_name == 'release' && github.event.action == 'published'
+
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{env.PROJECT_NAME}}-wheels
+          path: dist
+
+      - uses: pypa/gh-action-pypi-publish@release/v1

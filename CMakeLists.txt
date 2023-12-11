@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.26)
 project(DXCam_CPP
-        VERSION 0.0.1
+        VERSION 0.1.0
         LANGUAGES CXX
 )
 
@@ -10,21 +10,27 @@ set(BUILD_EXAMPLES ON CACHE BOOL "Build examples")
 set(BUILD_PYTHON ON CACHE BOOL "Build Python bindings")
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Installation Directory" FORCE)
 
-set(CMAKE_CXX_STANDARD 20)
-
+# Check dependencies
 # Require MSVC
 if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     message(FATAL_ERROR "DXCam_CPP requires MSVC")
 endif ()
-
 message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 message(STATUS "Configuring DXCam_CPP")
 
+set(CMAKE_CXX_STANDARD 20)
+
 # Set target directories
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+if (NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+endif ()
+if (NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+endif ()
+if (NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+endif ()
 
 # Set compiler options
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -68,8 +74,13 @@ add_library(DXCam SHARED
         src/DXFactory.h
 )
 target_include_directories(DXCam
-        PRIVATE src
-        PUBLIC include ${PROJECT_BINARY_DIR}/exports ${OpenCV_INCLUDE_DIRS}
+        PRIVATE
+        src
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/exports>
+        $<INSTALL_INTERFACE:include>
+        ${OpenCV_INCLUDE_DIRS}
 )
 target_link_libraries(DXCam
         PUBLIC d3d11 dxgi ${OpenCV_LIBS}
@@ -95,6 +106,29 @@ install(FILES $<TARGET_RUNTIME_DLLS:DXCam>
         DESTINATION bin
 )
 
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+        ${PROJECT_BINARY_DIR}/DXCamConfigVersion.cmake
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY AnyNewerVersion
+)
+export(EXPORT DXCamTargets
+        FILE ${PROJECT_BINARY_DIR}/DXCamTargets.cmake
+)
+configure_file(cmake/DXCamConfig.cmake
+        ${PROJECT_BINARY_DIR}/DXCamConfig.cmake
+        COPYONLY
+)
+install(EXPORT DXCamTargets
+        FILE DXCamTargets.cmake
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+)
+install(FILES
+        ${PROJECT_BINARY_DIR}/DXCamConfig.cmake
+        ${PROJECT_BINARY_DIR}/DXCamConfigVersion.cmake
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+)
+
 message(STATUS "Configuring DXCam_CPP - done")
 
 if (BUILD_BENCHMARKS)
@@ -103,8 +137,4 @@ endif ()
 
 if (BUILD_EXAMPLES)
     add_subdirectory(examples)
-endif ()
-
-if (BUILD_PYTHON)
-    add_subdirectory(python)
 endif ()

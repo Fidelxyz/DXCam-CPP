@@ -15,15 +15,17 @@ print(f'{camera.region=}')
 print(f'{camera.max_buffer_len=}')
 print(f'{camera.is_capturing=}')
 
-# image = camera.grab()
-# cv2.imshow("image", image)
-# cv2.waitKey()
+# Grab a single frame
+image = camera.grab()
+cv2.imshow("Single Frame Grabbing", image)
+cv2.waitKey()
 
+# Grab frames continuously
 try:
     camera.start()
     while True:
         image = camera.get_latest_frame()
-        cv2.imshow("image", image)
+        cv2.imshow("Continuous Frame Grabbing", image)
         cv2.waitKey()
 except KeyboardInterrupt:
     pass
