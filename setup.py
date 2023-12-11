@@ -33,7 +33,7 @@ class CMakeBuild(build_ext):
     def build_extension(self, ext: CMakeExtension) -> None:
         # Must be in this form due to bug in .resolve() only fixed in Python 3.10+
         ext_fullpath = Path.cwd() / self.get_ext_fullpath(ext.name)
-        extdir = ext_fullpath.parent.resolve() / ext.name
+        extdir = ext_fullpath.parent.resolve()
 
         # Using this requires trailing slash for auto-detection & inclusion of
         # auxiliary "native" libs
@@ -51,8 +51,12 @@ class CMakeBuild(build_ext):
         cmake_args = [
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DCMAKE_BUILD_TYPE={cfg}",  # not used on MSVC, but no harm
+            f"-DBUILD_PYTHON=ON",
+            f"-DINSTALL_PYTHON_ONLY=ON",
         ]
-        build_args = []
+        build_args = [
+            "--target", ext.name,
+        ]
         install_args = [
             "--prefix", str(extdir),
         ]
@@ -79,9 +83,7 @@ class CMakeBuild(build_ext):
 
         # Multi-config generators have a different way to specify configs
         if not single_config:
-            cmake_args += [
-                f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{cfg.upper()}={extdir}"
-            ]
+            cmake_args += []
             build_args += ["--config", cfg]
             install_args += ["--config", cfg]
 
@@ -113,8 +115,8 @@ class CMakeBuild(build_ext):
         )
 
         # Generate stubs
-        sys.path.insert(0, str(extdir))
-        stubgen.main(["-m", "dxcam_cpp", "-o", str(extdir)])
+        sys.path.insert(0, str(extdir / ext.name))
+        stubgen.main(["-m", "dxcam_cpp", "-o", str(extdir / ext.name)])
 
 
 # The information here can also be placed in setup.cfg - better separation of

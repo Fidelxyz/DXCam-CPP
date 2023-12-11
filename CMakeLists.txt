@@ -5,9 +5,10 @@ project(DXCam_CPP
 )
 
 # Configuration options
-set(BUILD_BENCHMARKS ON CACHE BOOL "Build benchmarks")
-set(BUILD_EXAMPLES ON CACHE BOOL "Build examples")
-set(BUILD_PYTHON ON CACHE BOOL "Build Python bindings")
+set(BUILD_BENCHMARKS OFF CACHE BOOL "Build benchmarks")
+set(BUILD_EXAMPLES OFF CACHE BOOL "Build examples")
+set(BUILD_PYTHON OFF CACHE BOOL "Build Python bindings")
+set(INSTALL_PYTHON_ONLY OFF CACHE BOOL "Install Python module ONLY")
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Installation Directory" FORCE)
 
 # Check dependencies
@@ -77,9 +78,8 @@ target_include_directories(DXCam
         PRIVATE
         src
         PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/exports>
-        $<INSTALL_INTERFACE:include>
+        include
+        ${PROJECT_BINARY_DIR}/exports
         ${OpenCV_INCLUDE_DIRS}
 )
 target_link_libraries(DXCam
@@ -90,44 +90,23 @@ generate_export_header(DXCam
 )
 
 # Install
-install(TARGETS DXCam
-        EXPORT DXCamTargets
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-)
-install(DIRECTORY include
-        DESTINATION .
-)
-install(FILES ${PROJECT_BINARY_DIR}/exports/dxcam_export.h
-        DESTINATION include
-)
-install(FILES $<TARGET_RUNTIME_DLLS:DXCam>
-        DESTINATION bin
-)
-
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-        ${PROJECT_BINARY_DIR}/DXCamConfigVersion.cmake
-        VERSION ${PROJECT_VERSION}
-        COMPATIBILITY AnyNewerVersion
-)
-export(EXPORT DXCamTargets
-        FILE ${PROJECT_BINARY_DIR}/DXCamTargets.cmake
-)
-configure_file(cmake/DXCamConfig.cmake
-        ${PROJECT_BINARY_DIR}/DXCamConfig.cmake
-        COPYONLY
-)
-install(EXPORT DXCamTargets
-        FILE DXCamTargets.cmake
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-)
-install(FILES
-        ${PROJECT_BINARY_DIR}/DXCamConfig.cmake
-        ${PROJECT_BINARY_DIR}/DXCamConfigVersion.cmake
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-)
+if (NOT INSTALL_PYTHON_ONLY)
+    install(TARGETS DXCam
+            EXPORT DXCamTargets
+            RUNTIME DESTINATION bin
+            LIBRARY DESTINATION lib
+            ARCHIVE DESTINATION lib
+    )
+    install(DIRECTORY include
+            DESTINATION .
+    )
+    install(FILES ${PROJECT_BINARY_DIR}/exports/dxcam_export.h
+            DESTINATION include
+    )
+    install(FILES $<TARGET_RUNTIME_DLLS:DXCam>
+            DESTINATION bin
+    )
+endif ()
 
 message(STATUS "Configuring DXCam_CPP - done")
 
@@ -137,4 +116,8 @@ endif ()
 
 if (BUILD_EXAMPLES)
     add_subdirectory(examples)
+endif ()
+
+if (BUILD_PYTHON)
+    add_subdirectory(python)
 endif ()

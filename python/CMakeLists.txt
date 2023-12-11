@@ -1,20 +1,6 @@
-cmake_minimum_required(VERSION 3.26)
-project(DXCam-CPP-Python
-        LANGUAGES CXX
-)
-
-# Check dependencies
-# Require MSVC
-if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    message(FATAL_ERROR "DXCam_CPP requires MSVC")
-endif ()
-message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
-
-set(CMAKE_CXX_STANDARD 20)
+message(STATUS "Configuring DXCam-CPP-Python - done")
 
 add_subdirectory(pybind11)
-find_package(DXCam REQUIRED)
-find_package(OpenCV REQUIRED)
 
 pybind11_add_module(dxcam_cpp MODULE
         src/util/string.cpp
@@ -28,21 +14,27 @@ pybind11_add_module(dxcam_cpp MODULE
 target_link_libraries(dxcam_cpp PRIVATE DXCam)
 add_dependencies(dxcam_cpp DXCam)
 
+if (INSTALL_PYTHON_ONLY)
+    set(PYTHON_INSTALL_DIR dxcam_cpp)
+else ()
+    set(PYTHON_INSTALL_DIR python/dxcam_cpp)
+endif ()
+
 # Collect DLLs
 install(TARGETS dxcam_cpp
-        RUNTIME DESTINATION .
-        LIBRARY DESTINATION .
-        ARCHIVE DESTINATION .
+        RUNTIME DESTINATION ${PYTHON_INSTALL_DIR}
+        LIBRARY DESTINATION ${PYTHON_INSTALL_DIR}
+        ARCHIVE DESTINATION ${PYTHON_INSTALL_DIR}
 )
 install(FILES $<TARGET_RUNTIME_DLLS:dxcam_cpp>
-        DESTINATION .
+        DESTINATION ${PYTHON_INSTALL_DIR}
 )
 # Collect clang_rt.asan_dynamic-x86_64.dll for Debug builds
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     find_file(ASAN_RUNTIME "clang_rt.asan_dynamic-x86_64.dll" PATHS ${CMAKE_MSVC_RUNTIME_LIBRARY})
     message(STATUS "ASAN_RUNTIME: ${ASAN_RUNTIME}")
     install(FILES ${ASAN_RUNTIME}
-            DESTINATION .
+            DESTINATION ${PYTHON_INSTALL_DIR}
     )
 endif ()
 

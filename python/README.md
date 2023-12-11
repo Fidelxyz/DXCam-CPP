@@ -3,7 +3,7 @@
 A high performance screen capturing library for Windows
 rewriting [DXcam](https://github.com/ra1nty/DXcam) in C++.
 
-## Usage as a Python Module
+## Usage
 
 ```shell
 pip install dxcam-cpp

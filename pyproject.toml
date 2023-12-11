@@ -13,9 +13,9 @@ authors = [
     { name = "Fidel Yin", email = "fidel.yin@hotmail.com" }
 ]
 description = "A high performance screen capturing library for Windows rewriting DXcam in C++"
-readme = "README.md"
+readme = "python/README.md"
 keywords = ["windows", "screenshot", "capture"]
-license = { text = "MIT License" }
+license = { file = "LICENSE" }
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: C++",
@@ -36,3 +36,7 @@ Issues = "https://github.com/Fidelxyz/DXCam-CPP/issues"
 [tool.cibuildwheel]
 archs = ["AMD64"]
 build = ["cp*"]
+
+[tool.setuptools]
+packages = ["dxcam_cpp"]
+package-dir = { "" = "python/src" }

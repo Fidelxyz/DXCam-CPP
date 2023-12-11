@@ -20,7 +20,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Ninja
         run: choco install ninja -y
@@ -29,7 +29,7 @@ jobs:
         id: cache-opencv
         uses: actions/cache@v3
         with:
-          path: C:/Tools/opencv
+          path: C:/Tools/opencv/build
           key: ${{runner.os}}-opencv
 
       - name: Setup OpenCV
@@ -61,52 +61,48 @@ jobs:
           path: ${{github.workspace}}/build/install
 
   build-wheels:
-    needs: [ build ]
+    strategy:
+      matrix:
+        python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11", "3.12" ]
+
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: ${{env.PROJECT_NAME}}-Release
-          path: ${{github.workspace}}/build/install
 
       - name: Cache OpenCV
         id: cache-opencv
         uses: actions/cache@v3
         with:
-          path: C:/Tools/opencv
+          path: C:/Tools/opencv/build
           key: ${{runner.os}}-opencv
 
       - name: Setup OpenCV
         if: steps.cache-opencv.outputs.cache-hit != 'true'
         run: choco install opencv -y
 
-      - name: Cache cibuildwheel
-        id: cache-cibuildwheel
-        uses: actions/cache@v3
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          path: D:/cache/cibuildwheel
-          key: ${{runner.os}}-cibuildwheel
+          python-version: ${{matrix.python-version}}
+          cache: 'pip'
 
-      - name: Build Python Wheels
-        uses: pypa/cibuildwheel@v2.16.2
+      - name: Install build tools
+        run: pip install --upgrade setuptools wheel
+
+      - name: Build Python Wheel
+        run: pip wheel ${{github.workspace}} --no-deps --wheel-dir=${{github.workspace}}/dist
         env:
           CMAKE_ARGS: >-
-            -DDXCam_DIR=${{github.workspace}}/build/install
             -DOpenCV_DIR=C:/Tools/opencv/build
-          CIBW_CACHE_PATH: D:/cache/cibuildwheel
-        with:
-          package-dir: ${{github.workspace}}/python
-          output-dir: ${{github.workspace}}/python/wheelhouse
+            -DCMAKE_BUILD_PARALLEL_LEVEL=2
 
       - uses: actions/upload-artifact@v3
         with:
           name: ${{env.PROJECT_NAME}}-wheels
-          path: ${{github.workspace}}/python/wheelhouse
+          path: ${{github.workspace}}/dist/*.whl
 
   upload_pypi:
     needs: [ build-wheels ]

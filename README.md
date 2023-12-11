@@ -3,12 +3,15 @@
 A high performance screen capturing library for Windows
 rewriting [DXcam](https://github.com/ra1nty/DXcam) in C++.
 
-STILL IN DEVELOPMENT.
+[![PyPI - Version](https://img.shields.io/pypi/v/dxcam-cpp)](https://pypi.org/project/dxcam-cpp/)
+[![CI](https://github.com/Fidelxyz/DXCam-CPP/actions/workflows/workflow.yml/badge.svg)](https://github.com/Fidelxyz/DXCam-CPP/actions/workflows/workflow.yml)
+[![GitHub License](https://img.shields.io/github/license/Fidelxyz/DXCam-CPP)](https://github.com/Fidelxyz/DXCam-CPP/blob/main/LICENSE)
 
 ## Features
 
 - C++ Dynamic Library
-- Python Module (Compatible with the original Python DXcam as an alternative)
+- Python Module (Compatible with the original
+  Python [DXcam](https://github.com/ra1nty/DXcam) as an alternative)
 
 ### TODO
 
@@ -22,7 +25,7 @@ Contributions are welcome!
 ## Usage as a Python Module
 
 ```shell
-pip install dxcam-cpp
+pip install dxcam_cpp
 ```
 
 The interface of the Python module of DXCam_CPP is designed to be **fully
@@ -40,22 +43,19 @@ Include `dxcam.h` in your project:
 #include <dxcam/dxcam.h>
 ```
 
-[OpenCV](https://github.com/opencv/opencv) is also required, since the
+[OpenCV](https://github.com/opencv/opencv) is automatically included, since the
 screenshot is returned as a `cv::Mat` object.
-
-```cpp
-#include <opencv2/opencv.hpp>
-```
 
 Everything provided by DXCam_CPP is in the `DXCam` namespace.
 
-Most of the usage is the same as the Python version of DXCam, **but the full
-consistency the interface with the Python version is not guaranteed**.
+Most of the usage is the same as the original Python DXCam, **but the full
+consistency the interface of C++ library with the original Python version is not
+guaranteed**.
 
 ### Initialization
 
-To create a DXCamera instance, you can call `create`, which returns a
-shared pointer to the `DXCamera` instance.
+To create a DXCamera instance, you can call `create`, which returns a shared
+pointer to the `DXCamera` instance.
 
 ```cpp
 std::shared_ptr<DXCam::DXCamera> camera = DXCam::create();
@@ -67,13 +67,13 @@ std::shared_ptr<DXCam::DXCamera> camera = DXCam::create();
 cv::Mat frame = camera.grab();
 ```
 
-It is worth nothing that `.grab` will return an empty `cv::Mat` such
+It is worth noting that `.grab` will return an empty `cv::Mat` such
 that `cv::Mat.empty() == true` if there is no new frame since
 the last time you called `.grab`.
 
-To screenshot a specific region, use the `region` parameter: it takes
-`DXCam::Region{left, top, right, bottom}` as the left, top, right, bottom
-coordinates of the bounding box.
+To screenshot a specific region, use the `region` argument: it takes
+`DXCam::Region{int left, int top, int right, int bottom}` as the left, top,
+right, bottom coordinates of the bounding box.
 
 ```cpp
 cv::Mat frame = camera.grab({0, 0, 1920, 1080});
@@ -81,8 +81,8 @@ cv::Mat frame = camera.grab({0, 0, 1920, 1080});
 
 ### Screen Capture
 
-To start a screen capture, simply use `.start`: the capture will be started in a
-separated thread, default at 60Hz. Use `.stop` to stop the capture.
+To start a screen capture, simply call `.start`: the capture will be started in
+a separated thread, default at 60Hz. Call `.stop` to stop the capture.
 
 ```cpp
 camera.start();
@@ -170,7 +170,7 @@ the whole frame buffer:
 
 ```cpp
 const std::span<cv::Mat> *frame_buffer;
-const int *head, tail;
+const int *head, *tail;
 const size_t *len;
 const bool *full;
 std::mutex *frame_buffer_all_mutex;
@@ -229,6 +229,29 @@ std::shared_ptr<DXCam::DXCamera> camera2 = DXCam::create(0);  // Not allowed, ca
 assert(camera1 == camera2);
 camera1.reset();
 camera2.reset(DXCam::create(0));  // Allowed
+```
+
+## Build
+
+### Prerequisites
+
+- CMake
+- Visual Studio 2022
+- [OpenCV](https://github.com/opencv/opencv)
+
+### Build for C++ Library
+
+```shell
+cmake -B ./build
+cmake --build ./build --config Release
+cmake --install ./build --config Release --prefix ./build/install
+```
+
+### Build for Python Package
+
+```shell
+cd python
+pip install .
 ```
 
 ## Benchmarks
