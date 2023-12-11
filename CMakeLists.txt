@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.27)
 project(DXCam_CPP
         VERSION 0.1.0
         LANGUAGES CXX
@@ -53,7 +53,6 @@ add_library(DXCam SHARED
         include/core/Duplicator.h
         include/core/Output.h
         include/core/OutputInfo.h
-        include/core/Processor.h
         include/core/Region.h
         include/core/StageSurface.h
         include/dxcam.h
@@ -64,6 +63,7 @@ add_library(DXCam SHARED
         src/core/OutputMetadata.cpp
         src/core/OutputMetadata.h
         src/core/Processor.cpp
+        src/core/Processor.h
         src/core/Region.cpp
         src/core/StageSurface.cpp
         src/util/HighResTimer.cpp

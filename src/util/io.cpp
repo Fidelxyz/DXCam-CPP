@@ -3,8 +3,6 @@
 //
 #include "util/io.h"
 
-#include <winuser.h>
-
 namespace DXCam {
 
 std::vector<IDXGIAdapter1 *> enum_dxgi_adapters() {

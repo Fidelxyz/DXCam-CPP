@@ -9,8 +9,6 @@
 #include <memory>
 
 #include "DXCamera.h"
-#include "core/Device.h"
-#include "core/Output.h"
 #include "core/OutputMetadata.h"
 
 namespace DXCam {

@@ -1,10 +1,11 @@
-message(STATUS "Configuring DXCam-CPP-Python - done")
+message(STATUS "Configuring DXCam-CPP-Python")
 
+find_package(Python COMPONENTS Interpreter Development)
 add_subdirectory(pybind11)
 
 pybind11_add_module(dxcam_cpp MODULE
-        src/util/string.cpp
-        src/util/string.h
+        src/util/string_cvt.cpp
+        src/util/string_cvt.h
         src/py_bindings.cpp
         src/py_dxcam.cpp
         src/py_dxcam.h

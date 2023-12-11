@@ -35,4 +35,4 @@ private:
 
 }  // namespace DXCam
 
-#endif  //DXCAM_CPP_OUTPUT_H
+#endif  // DXCAM_CPP_OUTPUT_H

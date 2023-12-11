@@ -17,4 +17,4 @@ struct OutputInfo {
     [[maybe_unused]] bool is_primary;
 };
 
-#endif  //DXCAM_CPP_OUTPUTINFO_H
+#endif  // DXCAM_CPP_OUTPUTINFO_H

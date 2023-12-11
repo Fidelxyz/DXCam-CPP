@@ -9,7 +9,6 @@
 #include <dxgi.h>
 #include <dxgi1_2.h>
 
-#include <string>
 #include <vector>
 
 #include "core/DeviceInfo.h"
@@ -32,4 +31,4 @@ public:
 
 }  // namespace DXCam
 
-#endif  //DXCAM_CPP_DEVICE_H
+#endif  // DXCAM_CPP_DEVICE_H

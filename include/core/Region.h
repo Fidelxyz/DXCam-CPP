@@ -5,8 +5,6 @@
 #ifndef DXCAM_CPP_REGION_H
 #define DXCAM_CPP_REGION_H
 
-#include <compare>
-
 namespace DXCam {
 
 class Region {

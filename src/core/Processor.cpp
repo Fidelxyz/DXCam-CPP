@@ -33,7 +33,7 @@ cv::Mat Processor::process(const DXGI_MAPPED_RECT &rect, int width, int height,
             assert(false);  // never reach
             break;
     }
-    
+
     pitch /= 4;  // number of channels
     cv::Mat image;
     if (rotation_angle == 0 || rotation_angle == 180) {

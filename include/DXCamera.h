@@ -1,14 +1,12 @@
 #ifndef DXCAM_CPP_DXCAMERA_H
 #define DXCAM_CPP_DXCAMERA_H
 
-#include <array>
-#include <string>
+#include <opencv2/opencv.hpp>
 #include <thread>
 
 #include "core/Device.h"
 #include "core/Duplicator.h"
 #include "core/Output.h"
-#include "core/Processor.h"
 #include "core/Region.h"
 #include "core/StageSurface.h"
 #include "dxcam_export.h"
@@ -128,7 +126,6 @@ private:
     Device *device;
     StageSurface stagesurf;
     Duplicator duplicator;
-    Processor processor;
 
     bool region_set_by_user;
 

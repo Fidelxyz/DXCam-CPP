@@ -7,8 +7,9 @@
 
 #include <dxgi.h>
 
-#include "Region.h"
-#include "opencv2/opencv.hpp"
+#include <opencv2/opencv.hpp>
+
+#include "core/Region.h"
 
 namespace DXCam {
 

@@ -5,6 +5,8 @@
 #ifndef DXCAM_CPP_DXCAM_H
 #define DXCAM_CPP_DXCAM_H
 
+#define NOMINMAX  // Disable min and max macros in <windows.h>
+
 #include "DXCamera.h"
 
 namespace DXCam {

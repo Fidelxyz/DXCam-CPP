@@ -27,4 +27,4 @@ public:
 
 }  // namespace DXCam
 
-#endif  //DXCAM_CPP_DUPLICATOR_H
+#endif  // DXCAM_CPP_DUPLICATOR_H

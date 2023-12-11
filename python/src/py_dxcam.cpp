@@ -1,5 +1,7 @@
 #include "py_dxcam.h"
 
+#include "dxcam.h"
+
 std::string device_info() {
     const auto info = DXCam::get_devices_info();
     std::string ret;

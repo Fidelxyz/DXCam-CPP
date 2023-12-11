@@ -6,11 +6,8 @@
 #define DXCAM_CPP_IO_H
 
 #include <dxgi.h>
-#include <dxgi1_2.h>
 
 #include <map>
-#include <span>
-#include <string>
 #include <vector>
 
 #include "core/OutputMetadata.h"
@@ -23,4 +20,4 @@ OutputMetadata get_output_metadata();
 
 }  // namespace DXCam
 
-#endif  //DXCAM_CPP_IO_H
+#endif  // DXCAM_CPP_IO_H

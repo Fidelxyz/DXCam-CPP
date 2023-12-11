@@ -6,9 +6,11 @@
 #include <stdexcept>
 #include <thread>
 
+#include "core/Processor.h"
 #include "util/HighResTimer.h"
 
 namespace DXCam {
+
 DXCamera::DXCamera(Output *const output, Device *const device,
                    const Region &region, const bool region_set_by_user,
                    const size_t max_buffer_len)
@@ -18,7 +20,6 @@ DXCamera::DXCamera(Output *const output, Device *const device,
       region_set_by_user(region_set_by_user),
       stagesurf(output, device),
       duplicator(output, device),
-      processor(),
       max_buffer_len(max_buffer_len) {
     this->output->get_resolution(&this->width, &this->height);
     this->validate_region(this->region);
@@ -50,8 +51,8 @@ cv::Mat DXCamera::grab(const Region &region) {
                                                this->duplicator.texture);
         this->duplicator.release_frame();
         const auto rect = this->stagesurf.map();
-        auto frame = this->processor.process(rect, this->width, this->height,
-                                             region, this->rotation_angle);
+        auto frame = Processor::process(rect, this->width, this->height, region,
+                                        this->rotation_angle);
         this->stagesurf.unmap();
         assert(!frame.empty());
         return frame;

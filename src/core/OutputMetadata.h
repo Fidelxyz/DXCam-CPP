@@ -32,4 +32,4 @@ public:
 
 }  // namespace DXCam
 
-#endif  //DXCAM_CPP_OUTPUTMETADATA_H
+#endif  // DXCAM_CPP_OUTPUTMETADATA_H
