@@ -1,7 +1,3 @@
-//
-// Created by Fidel on 2023/11/7.
-//
-
 #ifndef DXCAM_CPP_HIGHRESTIMER_H
 #define DXCAM_CPP_HIGHRESTIMER_H
 

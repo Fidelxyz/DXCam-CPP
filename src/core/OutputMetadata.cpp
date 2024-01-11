@@ -1,7 +1,3 @@
-//
-// Created by Fidel on 2023/10/28.
-//
-
 #include "core/OutputMetadata.h"
 
 namespace DXCam {

@@ -1,7 +1,3 @@
-//
-// Created by Fidel on 2023/10/26.
-//
-
 #ifndef DXCAM_CPP_STAGESURFACE_H
 #define DXCAM_CPP_STAGESURFACE_H
 

@@ -4,6 +4,7 @@ A high performance screen capturing library for Windows
 rewriting [DXcam](https://github.com/ra1nty/DXcam) in C++.
 
 [![PyPI - Version](https://img.shields.io/pypi/v/dxcam-cpp)](https://pypi.org/project/dxcam-cpp/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/dxcam-cpp)](https://pypi.org/project/dxcam-cpp/)
 [![CI](https://github.com/Fidelxyz/DXCam-CPP/actions/workflows/workflow.yml/badge.svg)](https://github.com/Fidelxyz/DXCam-CPP/actions/workflows/workflow.yml)
 [![GitHub License](https://img.shields.io/github/license/Fidelxyz/DXCam-CPP)](https://github.com/Fidelxyz/DXCam-CPP/blob/main/LICENSE)
 
@@ -17,8 +18,6 @@ rewriting [DXcam](https://github.com/ra1nty/DXcam) in C++.
 
 - Benchmark comparing with other libs
 - Formal documentation (Doxygen)
-- Github Actions
-- Unit test (if possible)
 
 Contributions are welcome!
 

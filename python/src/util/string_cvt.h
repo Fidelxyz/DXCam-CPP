@@ -1,7 +1,3 @@
-//
-// Created by Fidel on 2023/11/12.
-//
-
 #ifndef DXCAM_CPP_STRING_CVT_H
 #define DXCAM_CPP_STRING_CVT_H
 

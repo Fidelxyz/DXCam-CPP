@@ -1,6 +1,3 @@
-//
-// Created by Fidel on 2023/10/30.
-//
 #include "dxcam.h"
 #include "opencv2/opencv.hpp"
 

@@ -1,18 +1,12 @@
-//
-// Created by Fidel on 2023/11/7.
-//
-#include <chrono>
-#include <cmath>
-#include <cstdio>
-#include <string>
+#include <span>
 
 #include "dxcam.h"
 
 // params
-const std::string TITLE = "[Benchmark] target_fps";
+const std::string TITLE = "target_fps";
 const auto REGION = DXCam::Region{0, 0, 1920, 1080};
 const int DURATION = 5;
-const int TARGET_FPS[] = {30, 60, 90, 120, 180, 240, 360};
+const int TARGET_FPS[] = {30, 60, 90, 120, 165};
 
 std::tuple<double, double> bench(const std::shared_ptr<DXCam::DXCamera> &camera,
                                  const int target_fps) {
@@ -49,15 +43,22 @@ std::tuple<double, double> bench(const std::shared_ptr<DXCam::DXCamera> &camera,
 }
 
 int main() {
+    std::printf("[DXCam-CPP Benchmark] %s\n\n", TITLE.c_str());
+
+    std::puts("Parameters:");
+    std::printf("  Region: (%d, %d, %d, %d)\n", REGION.left, REGION.top,
+                REGION.right, REGION.bottom);
+    std::printf("  Duration: %d s\n", DURATION);
+
     // init
     auto camera = DXCam::create(REGION);
 
     // benchmark
     for (const auto &target_fps: TARGET_FPS) {
-        printf("Bench: Target FPS = %d\n", target_fps);
+        std::printf("Bench: Target FPS = %d\n", target_fps);
         const auto [fps, std] = bench(camera, target_fps);
-        printf("Result: Target FPS = %d: %lf FPS, std = %lf\n", target_fps, fps,
-               std);
+        std::printf("Result: Target FPS = %d: %lf FPS, std = %lf\n", target_fps,
+                    fps, std);
     }
 
     return 0;

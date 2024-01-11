@@ -1,6 +1,3 @@
-//
-// Created by Fidel on 2023/11/7.
-//
 #include "HighResTimer.h"
 
 #include <cassert>

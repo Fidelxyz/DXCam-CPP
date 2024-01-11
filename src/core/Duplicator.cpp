@@ -1,7 +1,3 @@
-//
-// Created by Fidel on 2023/10/26.
-//
-
 #include "core/Duplicator.h"
 
 #include <cassert>

@@ -1,7 +1,3 @@
-//
-// Created by Fidel on 2023/10/29.
-//
-
 #ifndef DXCAM_CPP_OUTPUTINFO_H
 #define DXCAM_CPP_OUTPUTINFO_H
 
