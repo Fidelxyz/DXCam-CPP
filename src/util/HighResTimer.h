@@ -10,7 +10,7 @@ public:
     void cancel() const;
 
 private:
-    HANDLE handle;
+    HANDLE handle_;
 };
 
 

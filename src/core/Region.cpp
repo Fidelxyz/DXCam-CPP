@@ -2,8 +2,8 @@
 
 namespace DXCam {
 
-int Region::get_width() const { return this->right - this->left; }
+int Region::get_width() const { return right - left; }
 
-int Region::get_height() const { return this->bottom - this->top; }
+int Region::get_height() const { return bottom - top; }
 
 }  // namespace DXCam

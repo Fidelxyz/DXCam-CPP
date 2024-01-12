@@ -23,6 +23,13 @@ public:
     DXCamera(const DXCamera &) = delete;
     DXCamera &operator=(const DXCamera &) = delete;
 
+    [[maybe_unused]] DXCAM_EXPORT long get_width() const;
+    [[maybe_unused]] DXCAM_EXPORT long get_height() const;
+    [[maybe_unused]] DXCAM_EXPORT int get_rotation_angle() const;
+    [[maybe_unused]] DXCAM_EXPORT const Region &get_region() const;
+    [[maybe_unused]] DXCAM_EXPORT size_t get_buffer_len() const;
+    [[maybe_unused]] DXCAM_EXPORT bool is_capturing() const;
+
     /**
      * @brief Capture the default region instantly.
      *
@@ -105,13 +112,6 @@ public:
             const std::atomic<bool> **full,
             std::mutex **frame_buffer_all_mutex);
 
-    long width = 0;
-    long height = 0;
-    int rotation_angle;
-    Region region;
-    size_t max_buffer_len;
-    bool is_capturing = false;
-
 private:
     void validate_region(const Region &region) const;
 
@@ -122,20 +122,26 @@ private:
 
     void rebuild_frame_buffer(const Region &region);
 
-    Output *output;
-    Device *device;
-    StageSurface stagesurf;
-    Duplicator duplicator;
+    long width_ = 0;
+    long height_ = 0;
+    int rotation_angle_;
+    Region region_;
+    bool region_set_by_user_;
+    size_t buffer_len_;
+    bool is_capturing_ = false;
 
-    bool region_set_by_user;
+    Output *output_;
+    Device *device_;
+    StageSurface stagesurf_;
+    Duplicator duplicator_;
 
-    std::mutex frame_buffer_all_mutex;
-    std::mutex *frame_buffer_mutex = nullptr;
-    std::atomic<bool> frame_available = false;
-    cv::Mat *frame_buffer = nullptr;
-    std::atomic<int> head = 0;
-    std::atomic<int> tail = 0;
-    std::atomic<bool> full = false;
+    std::mutex frame_buffer_all_mutex_;
+    std::mutex *frame_buffer_mutex_ = nullptr;
+    std::atomic<bool> frame_available_ = false;
+    cv::Mat *frame_buffer_ = nullptr;
+    std::atomic<int> head_ = 0;
+    std::atomic<int> tail_ = 0;
+    std::atomic<bool> full_ = false;
 
     std::thread thread;
     std::atomic<bool> stop_capture = false;

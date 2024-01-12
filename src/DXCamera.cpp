@@ -14,96 +14,106 @@ namespace DXCam {
 DXCamera::DXCamera(Output *const output, Device *const device,
                    const Region &region, const bool region_set_by_user,
                    const size_t max_buffer_len)
-    : output(output),
-      device(device),
-      region(region),
-      region_set_by_user(region_set_by_user),
-      stagesurf(output, device),
-      duplicator(output, device),
-      max_buffer_len(max_buffer_len) {
-    this->output->get_resolution(&this->width, &this->height);
-    this->validate_region(this->region);
+    : output_(output),
+      device_(device),
+      region_(region),
+      region_set_by_user_(region_set_by_user),
+      stagesurf_(output, device),
+      duplicator_(output, device),
+      buffer_len_(max_buffer_len) {
+    output_->get_resolution(&width_, &height_);
+    validate_region(region_);
 
-    this->rotation_angle = output->get_rotation_angle();
+    rotation_angle_ = output->get_rotation_angle();
 }
 
-DXCamera::~DXCamera() { this->stop(); }
+DXCamera::~DXCamera() { stop(); }
+
+long DXCamera::get_width() const { return width_; }
+
+long DXCamera::get_height() const { return height_; }
+
+int DXCamera::get_rotation_angle() const { return rotation_angle_; }
+
+const Region &DXCamera::get_region() const { return region_; }
+
+size_t DXCamera::get_buffer_len() const { return buffer_len_; }
+
+bool DXCamera::is_capturing() const { return is_capturing_; }
 
 void DXCamera::validate_region(const Region &region) const {
     if (!((0 <= region.left && region.left < region.right &&
-           region.right <= this->width) &&
+           region.right <= width_) &&
           (0 <= region.top && region.top < region.bottom &&
-           region.bottom <= this->height))) {
-        throw std::invalid_argument(
-                std::format("Invalid region: Region should be in {}x{}",
-                            this->width, this->height));
+           region.bottom <= height_))) {
+        throw std::invalid_argument(std::format(
+                "Invalid region: Region should be in {}x{}", width_, height_));
     }
 }
 
-cv::Mat DXCamera::grab() { return this->grab(this->region); }
+cv::Mat DXCamera::grab() { return grab(region_); }
 
 cv::Mat DXCamera::grab(const Region &region) {
-    this->validate_region(region);
+    validate_region(region);
 
-    if (this->duplicator.update_frame()) {
-        if (!this->duplicator.updated) { return {}; }
-        this->device->im_context->CopyResource(this->stagesurf.texture,
-                                               this->duplicator.texture);
-        this->duplicator.release_frame();
-        const auto rect = this->stagesurf.map();
-        auto frame = Processor::process(rect, this->width, this->height, region,
-                                        this->rotation_angle);
-        this->stagesurf.unmap();
+    if (duplicator_.update_frame()) {
+        if (!duplicator_.updated) { return {}; }
+        device_->im_context->CopyResource(stagesurf_.texture,
+                                          duplicator_.texture);
+        duplicator_.release_frame();
+        const auto rect = stagesurf_.map();
+        auto frame = Processor::process(rect, width_, height_, region,
+                                        rotation_angle_);
+        stagesurf_.unmap();
         assert(!frame.empty());
         return frame;
     } else {
-        this->on_output_change();
+        on_output_change();
         return {};
     }
 }
 
 void DXCamera::start(const int target_fps, const bool video_mode,
                      const int delay) {
-    this->start(this->region, target_fps, video_mode, delay);
+    start(region_, target_fps, video_mode, delay);
 }
 
 void DXCamera::start(const Region &region, const int target_fps,
                      const bool video_mode, const int delay) {
     if (delay != 0) {
         std::this_thread::sleep_for(std::chrono::seconds(delay));
-        this->on_output_change();
+        on_output_change();
     }
 
-    this->validate_region(region);
+    validate_region(region);
 
-    this->is_capturing = true;
-    this->rebuild_frame_buffer(region);
-    this->thread = std::thread([this, region, target_fps, video_mode] {
-        this->capture(region, target_fps, video_mode);
+    is_capturing_ = true;
+    rebuild_frame_buffer(region);
+    thread = std::thread([this, region, target_fps, video_mode] {
+        capture(region, target_fps, video_mode);
     });
 }
 
 void DXCamera::stop() {
-    if (this->is_capturing) {
-        this->frame_available = true;
-        this->frame_available.notify_all();
-        this->stop_capture = true;
-        if (this->thread.joinable()) { this->thread.join(); }
-        this->stop_capture = false;
-        this->is_capturing = false;
+    if (is_capturing_) {
+        frame_available_ = true;
+        frame_available_.notify_all();
+        stop_capture = true;
+        if (thread.joinable()) { thread.join(); }
+        stop_capture = false;
+        is_capturing_ = false;
     }
-    delete[] this->frame_buffer;
-    this->frame_buffer = nullptr;
+    delete[] frame_buffer_;
+    frame_buffer_ = nullptr;
 }
 
 cv::Mat DXCamera::get_latest_frame() {
-    this->frame_available.wait(false);
-    this->frame_available = false;
+    frame_available_.wait(false);
+    frame_available_ = false;
 
-    auto frame_idx =
-            (this->head - 1 + this->max_buffer_len) % this->max_buffer_len;
-    std::scoped_lock lock(this->frame_buffer_mutex[frame_idx]);
-    return this->frame_buffer[frame_idx];
+    auto frame_idx = (head_ - 1 + buffer_len_) % buffer_len_;
+    std::scoped_lock lock(frame_buffer_mutex_[frame_idx]);
+    return frame_buffer_[frame_idx];
 }
 
 void DXCamera::capture(const Region &region, const int target_fps,
@@ -118,17 +128,17 @@ void DXCamera::capture(const Region &region, const int target_fps,
     int frame_count = 0;
     const auto capture_start_time = std::chrono::steady_clock::now();
 
-    while (!this->stop_capture) {
+    while (!stop_capture) {
         timer.wait();
 
-        auto frame = this->grab(region);
+        auto frame = grab(region);
 
         if (video_mode || !frame.empty()) {
-            std::scoped_lock lock_all(this->frame_buffer_all_mutex);
+            std::scoped_lock lock_all(frame_buffer_all_mutex_);
 
             if (video_mode && frame.empty()) {
-                frame = this->frame_buffer[(this->tail - 1 + max_buffer_len) %
-                                           static_cast<int>(max_buffer_len)];
+                frame = frame_buffer_[(tail_ - 1 + buffer_len_) %
+                                      static_cast<int>(buffer_len_)];
             }
 
             // The order of the following instructions is important for thread
@@ -136,32 +146,27 @@ void DXCamera::capture(const Region &region, const int target_fps,
 
             // Move the head pointer.
             // This should be done before writing the frame.
-            if (this->full) {
-                this->head = (this->head + 1) %
-                             static_cast<int>(this->max_buffer_len);
-            }
+            if (full_) { head_ = (head_ + 1) % static_cast<int>(buffer_len_); }
             // Now, the frame to be written will be considered outside the range
             // of contents of frame buffer.
             {
                 // Lock the mutex of the single frame.
-                std::scoped_lock lock_frame(
-                        this->frame_buffer_mutex[this->tail]);
-                this->frame_buffer[this->tail] = std::move(frame);
+                std::scoped_lock lock_frame(frame_buffer_mutex_[tail_]);
+                frame_buffer_[tail_] = std::move(frame);
             }
             // Update the "full" flag.
             // This should be done before moving the tail pointer;
             // otherwise, if the tail pointer is moved but the full flag is not
             // updated, the user will get an empty frame buffer.
-            this->full = this->tail + 1 == this->head;
+            full_ = tail_ + 1 == head_;
             // Move the tail pointer.
             // This should be done after all the other operations are finished.
             // In this case, the new frame is ready to be included in the
             // contents of the frame buffer.
-            this->tail =
-                    (this->tail + 1) % static_cast<int>(this->max_buffer_len);
+            tail_ = (tail_ + 1) % static_cast<int>(buffer_len_);
 
-            this->frame_available = true;
-            this->frame_available.notify_all();
+            frame_available_ = true;
+            frame_available_.notify_all();
             frame_count++;
         }
     }
@@ -182,20 +187,20 @@ void DXCamera::capture(const Region &region, const int target_fps,
 void DXCamera::on_output_change() {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));  // 100ms
 
-    this->output->update_desc();
-    this->output->get_resolution(&this->width, &this->height);
-    if (this->region_set_by_user) {
-        this->validate_region(this->region);
+    output_->update_desc();
+    output_->get_resolution(&width_, &height_);
+    if (region_set_by_user_) {
+        validate_region(region_);
     } else {
-        this->region = {0, 0, this->width, this->height};
+        region_ = {0, 0, width_, height_};
     }
 
-    if (this->is_capturing) { this->rebuild_frame_buffer(this->region); }
+    if (is_capturing_) { rebuild_frame_buffer(region_); }
 
-    this->rotation_angle = this->output->get_rotation_angle();
+    rotation_angle_ = output_->get_rotation_angle();
 
-    this->stagesurf = StageSurface(this->output, this->device);
-    this->duplicator = Duplicator(this->output, this->device);
+    stagesurf_ = StageSurface(output_, device_);
+    duplicator_ = Duplicator(output_, device_);
 }
 
 void DXCamera::rebuild_frame_buffer(const Region &region) {
@@ -205,18 +210,18 @@ void DXCamera::rebuild_frame_buffer(const Region &region) {
     // TODO: Check for locked mutex?
 
     {
-        std::scoped_lock lock(this->frame_buffer_all_mutex);
+        std::scoped_lock lock(frame_buffer_all_mutex_);
 
-        delete[] this->frame_buffer;
-        this->frame_buffer = new cv::Mat[this->max_buffer_len];
-        for (auto &frame: std::span(this->frame_buffer, this->max_buffer_len)) {
+        delete[] frame_buffer_;
+        frame_buffer_ = new cv::Mat[buffer_len_];
+        for (auto &frame: std::span(frame_buffer_, buffer_len_)) {
             frame.create(region_height, region_width, CV_8UC4);
         }
-        delete[] this->frame_buffer_mutex;
-        this->frame_buffer_mutex = new std::mutex[this->max_buffer_len];
-        this->head = 0;
-        this->tail = 0;
-        this->full = false;
+        delete[] frame_buffer_mutex_;
+        frame_buffer_mutex_ = new std::mutex[buffer_len_];
+        head_ = 0;
+        tail_ = 0;
+        full_ = false;
     }
 }
 
@@ -227,13 +232,13 @@ void DXCamera::get_frame_buffer(const cv::Mat *const **frame_buffer,
                                 const std::atomic<int> **tail,
                                 const std::atomic<bool> **full,
                                 std::mutex **frame_buffer_all_mutex) {
-    *frame_buffer = &this->frame_buffer;
-    *frame_buffer_mutex = &this->frame_buffer_mutex;
-    *len = &this->max_buffer_len;
-    *head = &this->head;
-    *tail = &this->tail;
-    *full = &this->full;
-    *frame_buffer_all_mutex = &this->frame_buffer_all_mutex;
+    *frame_buffer = &frame_buffer_;
+    *frame_buffer_mutex = &frame_buffer_mutex_;
+    *len = &buffer_len_;
+    *head = &head_;
+    *tail = &tail_;
+    *full = &full_;
+    *frame_buffer_all_mutex = &frame_buffer_all_mutex_;
 }
 
 }  // namespace DXCam

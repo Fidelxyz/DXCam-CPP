@@ -21,11 +21,11 @@ public:
     ID3D11Texture2D *texture = nullptr;
 
 private:
-    LONG width = 0;
-    LONG height = 0;
-    DXGI_FORMAT dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
-    D3D11_TEXTURE2D_DESC desc;
-    IDXGISurface *surface = nullptr;
+    LONG width_ = 0;
+    LONG height_ = 0;
+    DXGI_FORMAT dxgi_format_ = DXGI_FORMAT_B8G8R8A8_UNORM;
+    D3D11_TEXTURE2D_DESC desc_;
+    IDXGISurface *surface_ = nullptr;
 };
 
 }  // namespace DXCam

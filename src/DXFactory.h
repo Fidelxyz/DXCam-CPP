@@ -33,8 +33,8 @@ private:
     [[nodiscard]] std::shared_ptr<DXCamera> find_instant(int device_idx,
                                                          int output_idx);
 
-    bool is_initialized = false;
-    std::map<std::tuple<int, int>, std::weak_ptr<DXCamera>> camera_instants;
+    bool is_initialized_ = false;
+    std::map<std::tuple<int, int>, std::weak_ptr<DXCamera>> camera_instants_;
 };
 
 }  // namespace DXCam

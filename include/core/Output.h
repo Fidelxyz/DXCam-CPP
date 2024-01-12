@@ -23,10 +23,11 @@ public:
     void update_desc();
 
     IDXGIOutput1 *output;
-    DXGI_OUTPUT_DESC desc;
 
 private:
     constexpr static const int ROTATION_MAPPING[] = {0, 0, 90, 180, 270};
+
+    DXGI_OUTPUT_DESC desc_;
 };
 
 }  // namespace DXCam

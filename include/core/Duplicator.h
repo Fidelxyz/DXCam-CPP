@@ -15,10 +15,10 @@ public:
     void release_frame() const;
 
     ID3D11Texture2D *texture = nullptr;
-    IDXGIOutputDuplication *duplicator = nullptr;
     bool updated = false;
-    Output *output = nullptr;
-    Device *device = nullptr;
+
+private:
+    IDXGIOutputDuplication *duplicator_ = nullptr;
 };
 
 }  // namespace DXCam

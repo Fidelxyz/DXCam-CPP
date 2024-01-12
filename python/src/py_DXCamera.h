@@ -36,10 +36,10 @@ public:
 private:
     static py::array_t<uint8_t> numpy_array_from(cv::Mat &&mat);
 
-    std::shared_ptr<DXCam::DXCamera> camera;
-    const cv::ColorConversionCodes cvt_color_flag;
+    std::shared_ptr<DXCam::DXCamera> camera_;
+    const cv::ColorConversionCodes cvt_color_flag_;
     const static std::unordered_map<std::string, cv::ColorConversionCodes>
-            cvt_color_flag_map;
+            cvt_color_flag_map_;
 };
 
 #endif  // DXCAM_CPP_PY_DXCAMERA_H
