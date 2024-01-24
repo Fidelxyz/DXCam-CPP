@@ -199,8 +199,8 @@ void DXCamera::on_output_change() {
 
     rotation_angle_ = output_->get_rotation_angle();
 
-    stagesurf_ = StageSurface(output_, device_);
-    duplicator_ = Duplicator(output_, device_);
+    stagesurf_.rebuild(output_, device_);
+    duplicator_.rebuild(output_, device_);
 }
 
 void DXCamera::rebuild_frame_buffer(const Region &region) {

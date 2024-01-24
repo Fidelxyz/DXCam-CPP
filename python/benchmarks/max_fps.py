@@ -2,7 +2,7 @@ import time
 
 import numpy as np
 
-REPEATS = 1000
+REPEATS = 100
 
 
 def benchmark(title: str, dxcam):
@@ -24,12 +24,7 @@ def benchmark(title: str, dxcam):
 
 
 if __name__ == '__main__':
-    import dxcam as dxcam_orig
+    # import dxcam
+    import dxcam_cpp as dxcam
 
-    benchmark("DXcam (Python)", dxcam_orig)
-    del dxcam_orig
-
-    import dxcam_cpp
-
-    benchmark("DXCam-CPP", dxcam_cpp)
-    del dxcam_cpp
+    benchmark("DXCam Benchmark", dxcam)

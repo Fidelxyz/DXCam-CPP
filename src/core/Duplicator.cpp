@@ -6,27 +6,38 @@
 namespace DXCam {
 
 Duplicator::Duplicator(Output *const output, Device *const device) {
+    create(output, device);
+}
+
+Duplicator::~Duplicator() { release(); }
+
+void Duplicator::create(Output *output, Device *device) {
     HRESULT hr = output->output->DuplicateOutput(device->device, &duplicator_);
     if (hr == DXGI_ERROR_UNSUPPORTED) {
-        std::cerr
-                << "IDXGIOutput1::DuplicateOutput failed: "
-                   "DXGI_ERROR_UNSUPPORTED.\n"
-                   "If you are running this application on a Microsoft Hybrid "
-                   "system, try to run the application on the integrated GPU "
-                   "instead of on the discrete GPU."
-                << std::endl;
+        std::cerr << "IDXGIOutput1::DuplicateOutput failed: "
+                     "DXGI_ERROR_UNSUPPORTED.\n"
+                     "If you are running this application on a Microsoft "
+                     "Hybrid system, try to run the application on the "
+                     "integrated GPU instead of on the discrete GPU."
+                  << std::endl;
         throw std::runtime_error(
                 "IDXGIOutput1::DuplicateOutput failed: "
                 "DXGI_ERROR_UNSUPPORTED.");
     }
     assert(SUCCEEDED(hr));
+    assert(duplicator_ != nullptr);
 }
 
-Duplicator::~Duplicator() {
+void Duplicator::release() {
     if (duplicator_ != nullptr) {
         duplicator_->Release();
         duplicator_ = nullptr;
     }
+}
+
+void Duplicator::rebuild(Output *const output, Device *const device) {
+    release();
+    create(output, device);
 }
 
 bool Duplicator::update_frame() {

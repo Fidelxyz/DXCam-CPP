@@ -4,10 +4,15 @@
 
 namespace DXCam {
 
-StageSurface::StageSurface(Output *const output, Device *const device)
-    : desc_() {
+StageSurface::StageSurface(Output *const output, Device *const device) {
+    create(output, device);
+}
+
+StageSurface::~StageSurface() { release(); }
+
+void StageSurface::create(Output *output, Device *device) {
     output->get_surface_size(&width_, &height_);
-    desc_ = {
+    D3D11_TEXTURE2D_DESC desc = {
             static_cast<UINT>(width_),
             static_cast<UINT>(height_),
             1,
@@ -20,19 +25,25 @@ StageSurface::StageSurface(Output *const output, Device *const device)
             0
     };
 
-    HRESULT hr = device->device->CreateTexture2D(&desc_, nullptr, &texture);
+    HRESULT hr = device->device->CreateTexture2D(&desc, nullptr, &texture);
     assert(SUCCEEDED(hr));
+    assert(texture != nullptr);
 
     hr = texture->QueryInterface(__uuidof(IDXGISurface),
                                  reinterpret_cast<void **>(&surface_));
     assert(SUCCEEDED(hr));
 }
 
-StageSurface::~StageSurface() {
+void StageSurface::release() {
     if (texture != nullptr) {
         texture->Release();
         texture = nullptr;
     }
+}
+
+void StageSurface::rebuild(Output *output, Device *device) {
+    release();
+    create(output, device);
 }
 
 DXGI_MAPPED_RECT StageSurface::map() const {

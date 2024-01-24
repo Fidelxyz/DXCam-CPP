@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dxcam_cpp"
-version = "0.1.0-1"
+version = "0.1.1"
 requires-python = ">=3.7"
 authors = [
     { name = "Fidel Yin", email = "fidel.yin@hotmail.com" }

@@ -6,7 +6,7 @@ AlignConsecutiveMacros: Consecutive
 AlignConsecutiveBitFields: Consecutive
 AlignArrayOfStructures: Left
 AlignEscapedNewlines: Left
-AlignTrailingComments: Always
+AlignTrailingComments: true
 AlignOperands: Align
 AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
