@@ -12,7 +12,7 @@ StageSurface::~StageSurface() { release(); }
 
 void StageSurface::create(Output *output, Device *device) {
     output->get_surface_size(&width_, &height_);
-    D3D11_TEXTURE2D_DESC desc = {
+    D3D11_TEXTURE2D_DESC desc{
             static_cast<UINT>(width_),
             static_cast<UINT>(height_),
             1,
