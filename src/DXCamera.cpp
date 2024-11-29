@@ -80,6 +80,8 @@ void DXCamera::start(const int target_fps, const bool video_mode,
 
 void DXCamera::start(const Region &region, const int target_fps,
                      const bool video_mode, const int delay) {
+    if (is_capturing_) { stop(); }
+
     if (delay != 0) {
         std::this_thread::sleep_for(std::chrono::seconds(delay));
         on_output_change();
