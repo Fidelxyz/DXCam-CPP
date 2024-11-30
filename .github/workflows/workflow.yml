@@ -7,6 +7,13 @@ on:
     branches: [ "main" ]
   release:
     types: [ published ]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish to PyPI"
+        required: false
+        type: boolean
+        default: false
 
 env:
   PROJECT_NAME: "DXCam_CPP"
@@ -110,7 +117,7 @@ jobs:
     environment: pypi
     permissions:
       id-token: write
-    if: github.event_name == 'release' && github.event.action == 'published'
+    if: (github.event_name == 'release' && github.event.action == 'published') || github.event.inputs.publish == 'true'
 
     steps:
       - uses: actions/download-artifact@v4
