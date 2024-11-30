@@ -85,10 +85,10 @@ a separated thread, default at 60Hz. Call `.stop` to stop the capture.
 
 ```cpp
 camera.start();
-assert(camera.is_capturing == true);
+assert(camera.is_capturing() == true);
 // do something
 camera.stop();
-assert(camera.is_capturing == false);
+assert(camera.is_capturing() == false);
 ```
 
 ### Consume the Screen Capture Data
@@ -168,13 +168,15 @@ Going further than the Python DXcam, you can use `.get_frame_buffer` to obtain
 the whole frame buffer:
 
 ```cpp
-const std::span<cv::Mat> *frame_buffer;
-const int *head, *tail;
+const cv::Mat *const *frame_buffer;
+const std::atomic_int *head, *tail;
 const size_t *len;
-const bool *full;
+const std::atomic_bool *full;
+std::mutex *const *frame_buffer_mutex;
 std::mutex *frame_buffer_all_mutex;
 
-camera.get_frame_buffer(&frame_buffer, &head, &tail, &len, &full, &frame_buffer_all_mutex);
+camera.get_frame_buffer(&frame_buffer, &frame_buffer_mutex, &len, &head,
+                        &tail, &full, &frame_buffer_all_mutex);
 
 {
     // you should lock frame_buffer_all_mutex when reading the frame buffer
@@ -227,7 +229,7 @@ std::shared_ptr<DXCam::DXCamera> camera1 = DXCam::create(0);
 std::shared_ptr<DXCam::DXCamera> camera2 = DXCam::create(0);  // Not allowed, camera1 will be returned
 assert(camera1 == camera2);
 camera1.reset();
-camera2.reset(DXCam::create(0));  // Allowed
+camera2 = DXCam::create(0);  // Allowed
 ```
 
 ## Build
