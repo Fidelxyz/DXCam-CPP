@@ -1,8 +1,14 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.15)
 project(DXCam_CPP
         VERSION 0.1.2
         LANGUAGES CXX
 )
+
+# Require out-of-source builds
+file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" LOC_PATH)
+if (EXISTS "${LOC_PATH}")
+    message(FATAL_ERROR "You cannot build in a source directory (or any directory with a CMakeLists.txt file). Please make a build subdirectory. Feel free to remove CMakeCache.txt and CMakeFiles.")
+endif ()
 
 # Configuration options
 set(BUILD_BENCHMARKS OFF CACHE BOOL "Build benchmarks")
@@ -10,6 +16,11 @@ set(BUILD_EXAMPLES OFF CACHE BOOL "Build examples")
 set(BUILD_PYTHON OFF CACHE BOOL "Build Python bindings")
 set(INSTALL_PYTHON_ONLY OFF CACHE BOOL "Install Python module ONLY")
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Installation Directory" FORCE)
+
+set(CMAKE_INSTALL_BINDIR bin)
+set(CMAKE_INSTALL_LIBDIR lib)
+set(CMAKE_INSTALL_INCLUDEDIR include)
+set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR})
 
 # Check dependencies
 # Require MSVC
@@ -20,19 +31,6 @@ message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 message(STATUS "Configuring DXCam_CPP")
 
-set(CMAKE_CXX_STANDARD 20)
-
-# Set target directories
-if (NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-endif ()
-if (NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-endif ()
-if (NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-endif ()
-
 # Set compiler options
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_options(/Od /fsanitize=address)
@@ -41,22 +39,20 @@ else ()
     add_link_options(/LTCG)
 endif ()
 
-include(GenerateExportHeader)
-
-find_package(OpenCV REQUIRED)
+find_package(OpenCV REQUIRED core)
 
 # DXCam
-add_library(DXCam SHARED
+add_library(DXCam
         ${PROJECT_BINARY_DIR}/exports/dxcam_export.h
-        include/core/Device.h
-        include/core/DeviceInfo.h
-        include/core/Duplicator.h
-        include/core/Output.h
-        include/core/OutputInfo.h
-        include/core/Region.h
-        include/core/StageSurface.h
-        include/dxcam.h
-        include/DXCamera.h
+        include/dxcam/core/Device.h
+        include/dxcam/core/DeviceInfo.h
+        include/dxcam/core/Duplicator.h
+        include/dxcam/core/Output.h
+        include/dxcam/core/OutputInfo.h
+        include/dxcam/core/Region.h
+        include/dxcam/core/StageSurface.h
+        include/dxcam/dxcam.h
+        include/dxcam/DXCamera.h
         src/core/Device.cpp
         src/core/Duplicator.cpp
         src/core/Output.cpp
@@ -77,14 +73,24 @@ add_library(DXCam SHARED
 target_include_directories(DXCam
         PRIVATE
         src
+        include/dxcam
         PUBLIC
-        include
-        ${PROJECT_BINARY_DIR}/exports
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/exports>
+        $<INSTALL_INTERFACE:include>
         ${OpenCV_INCLUDE_DIRS}
 )
 target_link_libraries(DXCam
         PUBLIC d3d11 dxgi ${OpenCV_LIBS}
 )
+target_compile_features(DXCam
+        PUBLIC cxx_std_20
+)
+set_target_properties(DXCam
+        PROPERTIES CXX_EXTENSIONS OFF
+        DEBUG_POSTFIX d
+)
+include(GenerateExportHeader)
 generate_export_header(DXCam
         EXPORT_FILE_NAME ${PROJECT_BINARY_DIR}/exports/dxcam_export.h
 )
@@ -93,19 +99,47 @@ generate_export_header(DXCam
 if (NOT INSTALL_PYTHON_ONLY)
     install(TARGETS DXCam
             EXPORT DXCamTargets
-            RUNTIME DESTINATION bin
-            LIBRARY DESTINATION lib
-            ARCHIVE DESTINATION lib
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     )
-    install(DIRECTORY include
-            DESTINATION .
+    install(DIRECTORY include DESTINATION .)
+    install(FILES
+            ${PROJECT_BINARY_DIR}/exports/dxcam_export.h
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    if (BUILD_SHARED_LIBS)
+        install(FILES $<TARGET_RUNTIME_DLLS:DXCam> DESTINATION ${CMAKE_INSTALL_BINDIR})
+    endif ()
+
+    include(CMakePackageConfigHelpers)
+    write_basic_package_version_file(
+            DXCamConfigVersion.cmake
+            VERSION ${PACKAGE_VERSION}
+            COMPATIBILITY AnyNewerVersion
     )
-    install(FILES ${PROJECT_BINARY_DIR}/exports/dxcam_export.h
-            DESTINATION include
+    install(EXPORT DXCamTargets
+            FILE DXCamTargets.cmake
+            NAMESPACE DXCam::
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dxcam
     )
-    install(FILES $<TARGET_RUNTIME_DLLS:DXCam>
-            DESTINATION bin
+    configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/DXCamConfig.cmake.in
+            "${CMAKE_CURRENT_BINARY_DIR}/DXCamConfig.cmake"
+            INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dxcam
+            PATH_VARS INCLUDE_INSTALL_DIR
     )
+    install(FILES
+            "${CMAKE_CURRENT_BINARY_DIR}/DXCamConfig.cmake"
+            "${CMAKE_CURRENT_BINARY_DIR}/DXCamConfigVersion.cmake"
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dxcam
+    )
+
+    # Export
+    export(TARGETS DXCam
+            NAMESPACE DXCam::
+            FILE DXCamTargets.cmake
+    )
+    export(PACKAGE DXCam)
 endif ()
 
 message(STATUS "Configuring DXCam_CPP - done")

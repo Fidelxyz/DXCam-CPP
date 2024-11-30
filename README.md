@@ -36,6 +36,15 @@ for more details.
 
 ## Usage as a C++ Library
 
+If you are using CMake, you can use `find_package` to include DXCam_CPP in your
+project:
+
+```cmake
+find_package(DXCam REQUIRED)
+target_include_directories(... PRIVATE ${DXCam_INCLUDE_DIRS})
+target_link_libraries(... PRIVATE ${DXCam_LIBS})
+```
+
 Include `dxcam.h` in your project:
 
 ```cpp

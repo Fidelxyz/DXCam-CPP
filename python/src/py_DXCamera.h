@@ -6,7 +6,7 @@
 
 #include <unordered_map>
 
-#include "DXCamera.h"
+#include "dxcam/DXCamera.h"
 
 namespace py = pybind11;
 

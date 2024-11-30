@@ -1,6 +1,6 @@
 #include <span>
 
-#include "dxcam.h"
+#include "dxcam/dxcam.h"
 
 // params
 const std::string TITLE = "target_fps";

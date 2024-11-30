@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+find_dependency(OpenCV REQUIRED)
+
+include("${CMAKE_CURRENT_LIST_DIR}/DXCamTargets.cmake")
+
+set_and_check(DXCam_INCLUDE_DIRS "@PACKAGE_INCLUDE_INSTALL_DIR@")
+set(DXCam_LIBS DXCam::DXCam)
+
+message(STATUS "Found DXCam: ${DXCam_DIR} (found version ${DXCam_VERSION})")

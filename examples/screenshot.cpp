@@ -1,4 +1,4 @@
-#include "dxcam.h"
+#include "dxcam/dxcam.h"
 #include "opencv2/opencv.hpp"
 
 int main() {

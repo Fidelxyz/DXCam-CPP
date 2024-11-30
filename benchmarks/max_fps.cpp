@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <string>
 
-#include "dxcam.h"
+#include "dxcam/dxcam.h"
 
 // params
 const std::string TITLE = "[Benchmark] max_fps";
