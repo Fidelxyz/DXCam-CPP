@@ -24,6 +24,11 @@ void Duplicator::create(Output *output, Device *device) {
                 "IDXGIOutput1::DuplicateOutput failed: "
                 "DXGI_ERROR_UNSUPPORTED.");
     }
+    if (hr == E_ACCESSDENIED) {
+        std::cerr << "IDXGIOutput1::DuplicateOutput failed: E_ACCESSDENIED."
+                  << std::endl;
+        return;
+    }
     assert(SUCCEEDED(hr));
     assert(duplicator_ != nullptr);
 }
@@ -41,6 +46,8 @@ void Duplicator::rebuild(Output *const output, Device *const device) {
 }
 
 bool Duplicator::update_frame() {
+    if (duplicator_ == nullptr) return false;
+
     DXGI_OUTDUPL_FRAME_INFO info;
     IDXGIResource *res = nullptr;
     HRESULT hr = duplicator_->AcquireNextFrame(0, &info, &res);
