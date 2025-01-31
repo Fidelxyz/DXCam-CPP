@@ -1,3 +1,5 @@
+#include <windows.h>
+
 #include "dxcam/dxcam.h"
 #include "opencv2/opencv.hpp"
 
@@ -20,9 +22,10 @@ int main() {
     }
 
     auto camera = DXCam::create();
+    camera->start(60, true);
 
     while (true) {
-        auto frame = camera->grab();
+        auto frame = camera->get_latest_frame();
         cv::imshow("frame", frame);
         if (cv::waitKey(0) == 27) {  // ESC
             break;
