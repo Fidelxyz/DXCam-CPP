@@ -9,6 +9,9 @@ namespace DXCam {
 void DXFactory::init() {
     if (is_initialized_) return;
 
+    DPI_AWARENESS_CONTEXT old_dpi_awareness = SetThreadDpiAwarenessContext(
+            DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+
     const auto p_adapters = enum_dxgi_adapters();
     for (const auto &p_adapter: p_adapters) {
         auto device = Device(p_adapter);
@@ -21,6 +24,8 @@ void DXFactory::init() {
         }
     }
     output_metadata = get_output_metadata();
+
+    SetThreadDpiAwarenessContext(old_dpi_awareness);
 
     is_initialized_ = true;
 }
