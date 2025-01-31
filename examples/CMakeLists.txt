@@ -1,5 +1,7 @@
 message(STATUS "Configuring examples")
 
+find_package(OpenCV REQUIRED core highgui)
+
 add_executable(example_screenshot screenshot.cpp)
 target_include_directories(example_screenshot PRIVATE ../include)
 target_link_libraries(example_screenshot DXCam dxgi d3d11 ${OpenCV_LIBS})

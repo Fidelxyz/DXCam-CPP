@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "*" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "*" ]
   release:
     types: [ published ]
   workflow_dispatch:
@@ -17,6 +17,7 @@ on:
 
 env:
   PROJECT_NAME: "DXCam_CPP"
+  VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
 jobs:
   build:
@@ -27,21 +28,24 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - name: Export GitHub Actions cache environment variables
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
       - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup Vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git 
+          .\vcpkg\bootstrap-vcpkg.bat
 
       - name: Setup Ninja
         run: choco install ninja -y
-
-      - name: Cache OpenCV
-        id: cache-opencv
-        uses: actions/cache@v4
-        with:
-          path: C:/Tools/opencv/build
-          key: ${{ runner.os }}-opencv
-
-      - name: Setup OpenCV
-        if: steps.cache-opencv.outputs.cache-hit != 'true'
-        run: choco install opencv -y
 
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
@@ -53,8 +57,8 @@ jobs:
           -G Ninja
           "-DCMAKE_C_COMPILER=cl.exe"
           "-DCMAKE_CXX_COMPILER=cl.exe"
-          -DOpenCV_DIR=C:/Tools/opencv/build
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
 
       - name: Build
         run: cmake --build ${{ github.workspace }}/build --config ${{ matrix.build_type }}
@@ -75,20 +79,21 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - name: Export GitHub Actions cache environment variables
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
       - uses: actions/checkout@v4
         with:
           submodules: true
 
-      - name: Cache OpenCV
-        id: cache-opencv
-        uses: actions/cache@v4
-        with:
-          path: C:/Tools/opencv/build
-          key: ${{ runner.os }}-opencv
-
-      - name: Setup OpenCV
-        if: steps.cache-opencv.outputs.cache-hit != 'true'
-        run: choco install opencv -y
+      - name: Setup Vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git 
+          .\vcpkg\bootstrap-vcpkg.bat
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -103,8 +108,8 @@ jobs:
         run: pip wheel ${{ github.workspace }} --no-deps --wheel-dir=${{ github.workspace }}/dist
         env:
           CMAKE_ARGS: >-
-            -DOpenCV_DIR=C:/Tools/opencv/build
             -DCMAKE_BUILD_PARALLEL_LEVEL=2
+            -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
 
       - uses: actions/upload-artifact@v4
         with:

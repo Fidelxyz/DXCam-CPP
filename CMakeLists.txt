@@ -39,7 +39,7 @@ else ()
     add_link_options(/LTCG)
 endif ()
 
-find_package(OpenCV REQUIRED core)
+find_package(OpenCV REQUIRED core imgcodecs)
 
 # DXCam
 add_library(DXCam
@@ -74,11 +74,11 @@ target_include_directories(DXCam
         PRIVATE
         src
         include/dxcam
+        ${OpenCV_INCLUDE_DIRS}
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/exports>
         $<INSTALL_INTERFACE:include>
-        ${OpenCV_INCLUDE_DIRS}
 )
 target_link_libraries(DXCam
         PUBLIC d3d11 dxgi ${OpenCV_LIBS}
