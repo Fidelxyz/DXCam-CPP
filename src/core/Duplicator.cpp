@@ -56,6 +56,14 @@ bool Duplicator::update_frame() {
         updated = false;
         return true;
     }
+    if (hr == DXGI_ERROR_INVALID_CALL) {
+        std::cerr << "IDXGIOutputDuplication::AcquireNextFrame failed: "
+                     "DXGI_ERROR_INVALID_CALL. Previous frame has not been "
+                     "released.\n"
+                  << "You probably called grab() when continuously capturing."
+                  << std::endl;
+        return false;
+    }
     assert(SUCCEEDED(hr));
 
     hr = res->QueryInterface(__uuidof(ID3D11Texture2D),
