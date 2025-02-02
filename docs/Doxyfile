@@ -1,0 +1,14 @@
+PROJECT_NAME           = DXCam-CPP
+INPUT                  = ../include/dxcam/
+RECURSIVE              = YES
+
+OUTPUT_DIRECTORY       = _build
+
+GENERATE_HTML          = NO
+GENERATE_LATEX         = NO
+GENERATE_XML           = YES
+XML_PROGRAMLISTING     = YES
+
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = YES
+PREDEFINED             = DXCAM_EXPORT:=

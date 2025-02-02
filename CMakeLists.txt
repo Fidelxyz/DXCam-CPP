@@ -14,6 +14,7 @@ endif ()
 set(BUILD_BENCHMARKS OFF CACHE BOOL "Build benchmarks")
 set(BUILD_EXAMPLES OFF CACHE BOOL "Build examples")
 set(BUILD_PYTHON OFF CACHE BOOL "Build Python bindings")
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
 set(INSTALL_PYTHON_ONLY OFF CACHE BOOL "Install Python module ONLY")
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Installation Directory" FORCE)
 
