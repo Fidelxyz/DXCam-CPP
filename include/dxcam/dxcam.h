@@ -9,9 +9,9 @@ namespace DXCam {
 
 /**
  * @brief Create a DXCamera instance which captures the full screen by default.
- * @param [in] device_idx The index of the device to be used. Use
+ * @param [in] device_idx The index of the device to be used. Call
  * get_devices_info() to list all devices.
- * @param [in] output_idx The index of the monitor to be used. Use
+ * @param [in] output_idx The index of the monitor to be used. Call
  * get_outputs_info() to list all outputs.
  * @param [in] max_buffer_len The size of the frame buffer.
  * @return A shared pointer to the DXCamera instance. If there exists an
@@ -25,9 +25,9 @@ namespace DXCam {
  * @brief Create a DXCamera instance which captures a rectangle region by
  * default.
  * @param [in] region The rectangle region to be captured.
- * @param [in] device_idx The index of the device to be used. Use
+ * @param [in] device_idx The index of the device to be used. Call
  * get_devices_info() to list all devices.
- * @param [in] output_idx The index of the monitor to be used. Use
+ * @param [in] output_idx The index of the monitor to be used. Call
  * get_outputs_info() to list all outputs.
  * @param [in] max_buffer_len The size of the frame buffer.
  * @return A shared pointer to the DXCamera instance. If there exists an
@@ -45,8 +45,9 @@ namespace DXCam {
 [[maybe_unused]] DXCAM_EXPORT std::vector<DeviceInfo> get_devices_info();
 /**
  * @brief List all outputs.
- * @return A vector of vector of OutputInfo. The first dimension represents each
- * device, and the second dimension represents each output of that device.
+ * @return A vector of vectors containing OutputInfo. The first dimension
+ * represents devices, and the second dimension represents outputs of that
+ * device.
  */
 [[maybe_unused]] DXCAM_EXPORT std::vector<std::vector<OutputInfo>>
 get_outputs_info();

@@ -12,8 +12,20 @@ Functions
 
 .. doxygenfunction:: DXCam::get_outputs_info
 
+Structs
+=======
+
+.. doxygenstruct:: DXCam::DeviceInfo
+   :members:
+
+.. doxygenstruct:: DXCam::OutputInfo
+   :members:
+
 Classes
 =======
 
 .. doxygenclass:: DXCam::DXCamera
+   :members:
+
+.. doxygenclass:: DXCam::Region
    :members:

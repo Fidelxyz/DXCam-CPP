@@ -23,21 +23,51 @@ public:
     DXCamera(const DXCamera &) = delete;
     DXCamera &operator=(const DXCamera &) = delete;
 
+    /**
+     * @brief Get the width of the region being captured.
+     *
+     * @return The width in pixels.
+     */
     [[maybe_unused]] DXCAM_EXPORT long get_width() const;
+    /**
+     * @brief Get the height of the region being captured.
+     *
+     * @return The height in pixels.
+     */
     [[maybe_unused]] DXCAM_EXPORT long get_height() const;
+    /**
+     * @brief Get the rotation angle of the screen being captured.
+     *
+     * @return The rotation angle in degrees.
+     */
     [[maybe_unused]] DXCAM_EXPORT int get_rotation_angle() const;
+    /**
+     * @brief Get the region being captured.
+     *
+     * @return The region object.
+     */
     [[maybe_unused]] DXCAM_EXPORT const Region &get_region() const;
+    /**
+     * @brief Get the size of the frame buffer in continuous capturing mode.
+     *
+     * @return The length of the frame buffer.
+     */
     [[maybe_unused]] DXCAM_EXPORT size_t get_buffer_len() const;
+    /**
+     * @brief Check if the camera is currently capturing.
+     *
+     * @return True if capturing, false otherwise.
+     */
     [[maybe_unused]] DXCAM_EXPORT bool is_capturing() const;
 
     /**
-     * @brief Capture the default region instantly.
+     * @brief Grab the default region instantly.
      *
      * @return a Mat object, containing the captured image.
      */
     [[maybe_unused]] DXCAM_EXPORT cv::Mat grab();
     /**
-     * @brief Capture the specified region instantly.
+     * @brief Grab the specified region instantly.
      *
      * @param [in] region The rectangle region to be captured.
      * @return a Mat object, containing the captured image.
@@ -47,9 +77,9 @@ public:
     /**
      * @brief Start capturing the default region.
      *
-     * @param [in] target_fps The target fps.
+     * @param [in] target_fps The target FPS.
      * @param [in] video_mode If true, a frame will always be pushed to the
-     * frame buffer at the target fps even if there is no a new frame available.
+     * frame buffer at the target FPS even if there is no a new frame available.
      * If false, only new frames will be pushed to the frame buffer.
      * @param [in] delay The delay in seconds before capturing starts.
      */
@@ -60,9 +90,9 @@ public:
      * @brief Start capturing the specified region.
      *
      * @param [in] region The rectangle region to be captured.
-     * @param [in] target_fps The target fps.
+     * @param [in] target_fps The target FPS.
      * @param [in] video_mode If true, a frame will always be pushed to the
-     * frame buffer at the target fps even if there is no a new frame available.
+     * frame buffer at the target FPS even if there is no a new frame available.
      * If false, only new frames will be pushed to the frame buffer.
      * @param [in] delay The delay in seconds before capturing starts.
      */
@@ -77,7 +107,7 @@ public:
     [[maybe_unused]] DXCAM_EXPORT void stop();
 
     /**
-     * @brief Get the latest frame in the frame buffer.
+     * @brief Get the latest frame from the frame buffer.
      *
      * @return a Mat object, containing the latest frame in the frame buffer.
      */
