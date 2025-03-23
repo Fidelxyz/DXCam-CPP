@@ -113,9 +113,6 @@ if (NOT INSTALL_PYTHON_ONLY)
     install(FILES
             ${PROJECT_BINARY_DIR}/exports/dxcam_export.h
             DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-    if (BUILD_SHARED_LIBS)
-        install(FILES $<TARGET_RUNTIME_DLLS:DXCam> DESTINATION ${CMAKE_INSTALL_BINDIR})
-    endif ()
 
     include(CMakePackageConfigHelpers)
     write_basic_package_version_file(
