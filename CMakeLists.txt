@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 project(DXCam_CPP
-        VERSION 0.1.2
+        VERSION 0.2.0
         LANGUAGES CXX
 )
 
@@ -34,7 +34,7 @@ message(STATUS "Configuring DXCam_CPP")
 
 # Set compiler options
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_compile_options(/Od /fsanitize=address)
+    add_compile_options(/Od /fsanitize=address /Zi)
 else ()
     add_compile_options(/O2 /GL)
     add_link_options(/LTCG)
