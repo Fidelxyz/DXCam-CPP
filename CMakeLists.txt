@@ -4,6 +4,11 @@ project(DXCam_CPP
         LANGUAGES CXX
 )
 
+# Set default install directory
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Installation Directory" FORCE)
+endif ()
+
 # Require out-of-source builds
 file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" LOC_PATH)
 if (EXISTS "${LOC_PATH}")
@@ -16,7 +21,6 @@ set(BUILD_EXAMPLES OFF CACHE BOOL "Build examples")
 set(BUILD_PYTHON OFF CACHE BOOL "Build Python bindings")
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
 set(INSTALL_PYTHON_ONLY OFF CACHE BOOL "Install Python module ONLY")
-set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Installation Directory" FORCE)
 
 set(CMAKE_INSTALL_BINDIR bin)
 set(CMAKE_INSTALL_LIBDIR lib)
