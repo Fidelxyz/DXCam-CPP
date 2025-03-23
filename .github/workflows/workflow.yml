@@ -4,11 +4,15 @@ on:
   push:
     branches: [ "*" ]
     paths-ignore:
+      - "README.md"
+      - "LICENSE"
       - "docs/**"
       - ".readthedocs.yaml"
   pull_request:
     branches: [ "*" ]
     paths-ignore:
+      - "README.md"
+      - "LICENSE"
       - "docs/**"
       - ".readthedocs.yaml"
   release:
