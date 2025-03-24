@@ -2,7 +2,6 @@
 Based on https://github.com/pybind/cmake_example/blob/master/setup.py
 """
 import os
-import re
 import subprocess
 import sys
 from pathlib import Path
@@ -38,7 +37,8 @@ class CMakeBuild(build_ext):
         # Using this requires trailing slash for auto-detection & inclusion of
         # auxiliary "native" libs
 
-        debug = int(os.environ.get("DEBUG", 0)) if self.debug is None else self.debug
+        debug = int(
+            os.environ.get("DEBUG", 0)) if self.debug is None else self.debug
         cfg = "Debug" if debug else "Release"
 
         # CMake lets you override the generator - we need to check this.
@@ -64,10 +64,12 @@ class CMakeBuild(build_ext):
         # Adding CMake arguments set as environment variable
         # (needed e.g. to build for ARM OSx on conda-forge)
         if "CMAKE_ARGS" in os.environ:
-            cmake_args += [item for item in os.environ["CMAKE_ARGS"].split(" ") if item]
+            cmake_args += [item for item in os.environ["CMAKE_ARGS"].split(" ")
+                           if item]
 
         # In this example, we pass in the version to C++. You might not need to.
-        cmake_args += [f"-DDXCAM_VERSION_INFO={self.distribution.get_version()}"]
+        cmake_args += [
+            f"-DDXCAM_VERSION_INFO={self.distribution.get_version()}"]
 
         # Single config generators are handled "normally"
         single_config = any(x in cmake_generator for x in {"NMake", "Ninja"})
@@ -111,7 +113,8 @@ class CMakeBuild(build_ext):
             ["cmake", "--build", ".", *build_args], cwd=build_temp, check=True
         )
         subprocess.run(
-            ["cmake", "--install", ".", *install_args], cwd=build_temp, check=True
+            ["cmake", "--install", ".", *install_args], cwd=build_temp,
+            check=True
         )
 
         # Generate stubs
