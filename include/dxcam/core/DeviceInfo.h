@@ -1,8 +1,7 @@
 #ifndef DXCAM_CPP_DEVICEINFO_H
 #define DXCAM_CPP_DEVICEINFO_H
 
-#include <dxgi.h>
-
+#include <Windows.h>
 #include <string>
 
 namespace DXCam {

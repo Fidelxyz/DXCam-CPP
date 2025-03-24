@@ -1,17 +1,18 @@
-#include "core/Duplicator.h"
+#include "Duplicator.h"
 
 #include <cassert>
 #include <iostream>
 
 namespace DXCam {
 
-Duplicator::Duplicator(Output *const output, Device *const device) {
+Duplicator::Duplicator(const Output *const output, const Device *const device) {
     create(output, device);
 }
 
 Duplicator::~Duplicator() { release(); }
 
-void Duplicator::create(Output *output, Device *device) {
+void Duplicator::create(const Output *const output,
+                        const Device *const device) {
     HRESULT hr = output->output->DuplicateOutput(device->device, &duplicator_);
     if (hr == DXGI_ERROR_UNSUPPORTED) {
         std::cerr << "IDXGIOutput1::DuplicateOutput failed: "
@@ -21,8 +22,8 @@ void Duplicator::create(Output *output, Device *device) {
                      "integrated GPU instead of on the discrete GPU."
                   << std::endl;
         throw std::runtime_error(
-                "IDXGIOutput1::DuplicateOutput failed: "
-                "DXGI_ERROR_UNSUPPORTED.");
+            "IDXGIOutput1::DuplicateOutput failed: "
+            "DXGI_ERROR_UNSUPPORTED.");
     }
     if (hr == E_ACCESSDENIED) {
         std::cerr << "IDXGIOutput1::DuplicateOutput failed: E_ACCESSDENIED."
@@ -40,7 +41,8 @@ void Duplicator::release() {
     }
 }
 
-void Duplicator::rebuild(Output *const output, Device *const device) {
+void Duplicator::rebuild(const Output *const output,
+                         const Device *const device) {
     release();
     create(output, device);
 }
@@ -68,7 +70,10 @@ bool Duplicator::update_frame() {
 
     hr = res->QueryInterface(__uuidof(ID3D11Texture2D),
                              reinterpret_cast<void **>(&texture));
-    if (FAILED(hr)) { duplicator_->ReleaseFrame(); }
+    if (FAILED(hr)) {
+        hr = duplicator_->ReleaseFrame();
+        assert(SUCCEEDED(hr));
+    }
 
     updated = true;
     return true;

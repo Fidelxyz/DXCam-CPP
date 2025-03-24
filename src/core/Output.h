@@ -6,12 +6,12 @@
 
 #include <string>
 
-#include "core/OutputInfo.h"
+#include "../../include/dxcam/core/OutputInfo.h"
 
 namespace DXCam {
 
 class Output {
-public:
+   public:
     explicit Output(IDXGIOutput1 *output);
 
     [[nodiscard]] OutputInfo get_info() const;
@@ -24,8 +24,8 @@ public:
 
     IDXGIOutput1 *output;
 
-private:
-    constexpr static const int ROTATION_MAPPING[] = {0, 0, 90, 180, 270};
+   private:
+    constexpr static int ROTATION_MAPPING[] = {0, 0, 90, 180, 270};
 
     DXGI_OUTPUT_DESC desc_;
 };

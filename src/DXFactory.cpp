@@ -9,11 +9,12 @@ namespace DXCam {
 void DXFactory::init() {
     if (is_initialized_) return;
 
-    DPI_AWARENESS_CONTEXT old_dpi_awareness = SetThreadDpiAwarenessContext(
+    const DPI_AWARENESS_CONTEXT old_dpi_awareness =
+        SetThreadDpiAwarenessContext(
             DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
     const auto p_adapters = enum_dxgi_adapters();
-    for (const auto &p_adapter: p_adapters) {
+    for (const auto &p_adapter : p_adapters) {
         auto device = Device(p_adapter);
         const auto p_outputs = device.enum_outputs();
         if (!p_outputs.empty()) {
@@ -37,11 +38,11 @@ std::shared_ptr<DXCamera> DXFactory::create(const int device_idx,
 
     if (output_idx == -1) { output_idx = find_primary_output_idx(device_idx); }
 
-    auto instant_ptr = find_instant(device_idx, output_idx);
-    if (instant_ptr) {
-        printf("You already created a DXCamera Instance for Device %d--Output "
-               "%d!\n",
-               device_idx, output_idx);
+    if (auto instant_ptr = find_instant(device_idx, output_idx)) {
+        printf(
+            "You already created a DXCamera Instance for Device %d--Output "
+            "%d!\n",
+            device_idx, output_idx);
         return instant_ptr;
     }
 
@@ -69,11 +70,11 @@ std::shared_ptr<DXCamera> DXFactory::create(const Region &region,
 
     if (output_idx == -1) { output_idx = find_primary_output_idx(device_idx); }
 
-    auto instant_ptr = find_instant(device_idx, output_idx);
-    if (instant_ptr) {
-        printf("You already created a DXCamera Instance for Device %d--Output "
-               "%d!\n",
-               device_idx, output_idx);
+    if (auto instant_ptr = find_instant(device_idx, output_idx)) {
+        printf(
+            "You already created a DXCamera Instance for Device %d--Output "
+            "%d!\n",
+            device_idx, output_idx);
         return instant_ptr;
     }
 
@@ -93,7 +94,7 @@ std::vector<DeviceInfo> DXFactory::get_devices_info() {
     init();
 
     std::vector<DeviceInfo> devices_info;
-    for (const auto &device: devices) {
+    for (const auto &device : devices) {
         devices_info.emplace_back(device.get_info());
     }
     return devices_info;
@@ -103,12 +104,12 @@ std::vector<std::vector<OutputInfo>> DXFactory::get_outputs_info() {
     init();
 
     std::vector<std::vector<OutputInfo>> outputs_info;
-    for (const auto &device_outputs: outputs) {
+    for (const auto &device_outputs : outputs) {
         std::vector<OutputInfo> device_outputs_info;
-        for (const auto &output: device_outputs) {
+        for (const auto &output : device_outputs) {
             OutputInfo output_info = output.get_info();
             output_info.is_primary =
-                    output_metadata.get(output.get_device_name()).is_primary;
+                output_metadata.get(output.get_device_name()).is_primary;
             device_outputs_info.emplace_back(std::move(output_info));
         }
         outputs_info.emplace_back(std::move(device_outputs_info));
@@ -120,8 +121,8 @@ int DXFactory::find_primary_output_idx(const int device_idx) const {
     for (int output_idx = 0; output_idx < output_metadata.adapters.size();
          output_idx++) {
         if (output_metadata
-                    .get(outputs[device_idx][output_idx].get_device_name())
-                    .is_primary) {
+                .get(outputs[device_idx][output_idx].get_device_name())
+                .is_primary) {
             return output_idx;
         }
     }
@@ -130,7 +131,7 @@ int DXFactory::find_primary_output_idx(const int device_idx) const {
 
 std::shared_ptr<DXCamera> DXFactory::find_instant(const int device_idx,
                                                   const int output_idx) {
-    auto instant_key = std::make_tuple(device_idx, output_idx);
+    const auto instant_key = std::make_tuple(device_idx, output_idx);
     decltype(camera_instants_)::iterator instant;
     while ((instant = camera_instants_.find(instant_key)) !=
            camera_instants_.end()) {

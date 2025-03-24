@@ -49,24 +49,24 @@ find_package(OpenCV REQUIRED core imgcodecs)
 # DXCam
 add_library(DXCam
         ${PROJECT_BINARY_DIR}/exports/dxcam_export.h
-        include/dxcam/core/Device.h
         include/dxcam/core/DeviceInfo.h
-        include/dxcam/core/Duplicator.h
-        include/dxcam/core/Output.h
         include/dxcam/core/OutputInfo.h
         include/dxcam/core/Region.h
-        include/dxcam/core/StageSurface.h
         include/dxcam/dxcam.h
         include/dxcam/DXCamera.h
         src/core/Device.cpp
+        src/core/Device.h
         src/core/Duplicator.cpp
+        src/core/Duplicator.h
         src/core/Output.cpp
+        src/core/Output.h
         src/core/OutputMetadata.cpp
         src/core/OutputMetadata.h
         src/core/Processor.cpp
         src/core/Processor.h
         src/core/Region.cpp
         src/core/StageSurface.cpp
+        src/core/StageSurface.h
         src/util/HighResTimer.cpp
         src/util/io.cpp
         src/util/io.h

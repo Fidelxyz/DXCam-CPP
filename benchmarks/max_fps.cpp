@@ -6,9 +6,9 @@
 
 // params
 const std::string TITLE = "[Benchmark] max_fps";
-const auto REGION = DXCam::Region{0, 0, 1920, 1080};
-const int TOTAL_FRAMES = 100;
-const int REPEATS = 5;
+constexpr auto REGION = DXCam::Region{0, 0, 1920, 1080};
+constexpr int TOTAL_FRAMES = 100;
+constexpr int REPEATS = 5;
 
 double bench(const std::shared_ptr<DXCam::DXCamera>& camera) {
     const auto begin_time = std::chrono::steady_clock::now();
@@ -26,7 +26,7 @@ double bench(const std::shared_ptr<DXCam::DXCamera>& camera) {
 
 int main() {
     // init
-    auto camera = DXCam::create(REGION);
+    const auto camera = DXCam::create(REGION);
 
     // benchmarks
     double duration = std::numeric_limits<double>::max();

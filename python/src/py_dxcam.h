@@ -4,7 +4,6 @@
 #include <pybind11/pybind11.h>
 
 #include "py_DXCamera.h"
-#include "util/string_cvt.h"
 
 namespace py = pybind11;
 

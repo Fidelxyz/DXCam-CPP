@@ -1,4 +1,4 @@
-#include "core/Device.h"
+#include "Device.h"
 
 #include <cassert>
 
@@ -8,10 +8,10 @@ Device::Device(IDXGIAdapter1 *const adapter) : adapter(adapter), desc() {
     HRESULT hr = adapter->GetDesc1(&desc);
     assert(SUCCEEDED(hr));
 
-    const D3D_FEATURE_LEVEL feature_levels[] = {
-            D3D_FEATURE_LEVEL_11_0,
-            D3D_FEATURE_LEVEL_10_1,
-            D3D_FEATURE_LEVEL_10_0,
+    constexpr D3D_FEATURE_LEVEL feature_levels[] = {
+        D3D_FEATURE_LEVEL_11_0,
+        D3D_FEATURE_LEVEL_10_1,
+        D3D_FEATURE_LEVEL_10_0,
     };
 
     hr = D3D11CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, 0,

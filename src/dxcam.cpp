@@ -4,7 +4,7 @@
 
 namespace DXCam {
 
-static DXFactory factory = DXFactory();
+static auto factory = DXFactory();
 
 std::shared_ptr<DXCamera> create(const int device_idx, const int output_idx,
                                  const size_t max_buffer_len) {

@@ -1,8 +1,6 @@
 #ifndef DXCAM_CPP_OUTPUTINFO_H
 #define DXCAM_CPP_OUTPUTINFO_H
 
-#include <dxgi.h>
-
 #include <string>
 
 namespace DXCam {

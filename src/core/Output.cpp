@@ -1,4 +1,4 @@
-#include "core/Output.h"
+#include "Output.h"
 
 #include <cassert>
 #include <utility>

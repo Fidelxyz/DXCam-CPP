@@ -7,8 +7,8 @@
 namespace DXCam {
 
 class Duplicator {
-public:
-    Duplicator(Output *output, Device *device);
+   public:
+    Duplicator(const Output *output, const Device *device);
     ~Duplicator();
 
     // Disallow copy and move
@@ -17,7 +17,7 @@ public:
     Duplicator(Duplicator &&other) = delete;
     Duplicator &operator=(Duplicator &&other) = delete;
 
-    void rebuild(Output *output, Device *device);
+    void rebuild(const Output *output, const Device *device);
 
     bool update_frame();
     void release_frame() const;
@@ -25,8 +25,8 @@ public:
     ID3D11Texture2D *texture = nullptr;
     bool updated = false;
 
-private:
-    void create(Output *output, Device *device);
+   private:
+    void create(const Output *output, const Device *device);
     void release();
 
     IDXGIOutputDuplication *duplicator_ = nullptr;

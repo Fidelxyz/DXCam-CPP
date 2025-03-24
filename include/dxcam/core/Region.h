@@ -7,7 +7,7 @@ namespace DXCam {
  * @brief Represents a rectangular region.
  */
 class Region {
-public:
+   public:
     /**
      * @brief The coordinate of the left boundary of the region.
      */

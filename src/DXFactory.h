@@ -6,11 +6,15 @@
 
 #include "DXCamera.h"
 #include "core/OutputMetadata.h"
+#include "../include/dxcam/core/DeviceInfo.h"
+#include "../include/dxcam/core/OutputInfo.h"
+#include "core/Device.h"
+#include "core/Output.h"
 
 namespace DXCam {
 
 class DXFactory {
-public:
+   public:
     DXFactory() = default;
 
     std::shared_ptr<DXCamera> create(int device_idx = 0, int output_idx = -1,
@@ -26,7 +30,7 @@ public:
     std::vector<std::vector<Output>> outputs;
     OutputMetadata output_metadata;
 
-private:
+   private:
     void init();
 
     [[nodiscard]] int find_primary_output_idx(int device_idx) const;

@@ -6,7 +6,10 @@
 #include <stdexcept>
 #include <thread>
 
+#include "core/Duplicator.h"
+#include "core/Output.h"
 #include "core/Processor.h"
+#include "core/StageSurface.h"
 #include "util/HighResTimer.h"
 
 namespace DXCam {
@@ -14,20 +17,24 @@ namespace DXCam {
 DXCamera::DXCamera(Output *const output, Device *const device,
                    const Region &region, const bool region_set_by_user,
                    const size_t max_buffer_len)
-    : output_(output),
-      device_(device),
-      region_(region),
+    : region_(region),
       region_set_by_user_(region_set_by_user),
-      stagesurf_(output, device),
-      duplicator_(output, device),
-      buffer_len_(max_buffer_len) {
+      buffer_len_(max_buffer_len),
+      output_(output),
+      device_(device),
+      stagesurf_(new StageSurface(output, device)),
+      duplicator_(new Duplicator(output, device)) {
     output_->get_resolution(&width_, &height_);
     validate_region(region_);
 
     rotation_angle_ = output->get_rotation_angle();
 }
 
-DXCamera::~DXCamera() { stop(); }
+DXCamera::~DXCamera() {
+    stop();
+    delete stagesurf_;
+    delete duplicator_;
+}
 
 long DXCamera::get_width() const { return width_; }
 
@@ -47,7 +54,7 @@ void DXCamera::validate_region(const Region &region) const {
           (0 <= region.top && region.top < region.bottom &&
            region.bottom <= height_))) {
         throw std::invalid_argument(std::format(
-                "Invalid region: Region should be in {}x{}", width_, height_));
+            "Invalid region: Region should be in {}x{}", width_, height_));
     }
 }
 
@@ -56,15 +63,15 @@ cv::Mat DXCamera::grab() { return grab(region_); }
 cv::Mat DXCamera::grab(const Region &region) {
     validate_region(region);
 
-    if (duplicator_.update_frame()) {
-        if (!duplicator_.updated) { return {}; }
-        device_->im_context->CopyResource(stagesurf_.texture,
-                                          duplicator_.texture);
-        duplicator_.release_frame();
-        const auto rect = stagesurf_.map();
-        auto frame = Processor::process(rect, width_, height_, region,
-                                        rotation_angle_);
-        stagesurf_.unmap();
+    if (duplicator_->update_frame()) {
+        if (!duplicator_->updated) { return {}; }
+        device_->im_context->CopyResource(stagesurf_->texture,
+                                          duplicator_->texture);
+        duplicator_->release_frame();
+        const auto rect = stagesurf_->map();
+        auto frame =
+            Processor::process(rect, width_, height_, region, rotation_angle_);
+        stagesurf_->unmap();
         assert(!frame.empty());
         return frame;
     } else {
@@ -113,7 +120,7 @@ cv::Mat DXCamera::get_latest_frame() {
     frame_available_.wait(false);
     frame_available_ = false;
 
-    auto frame_idx = (head_ - 1 + buffer_len_) % buffer_len_;
+    const size_t frame_idx = (head_ - 1 + buffer_len_) % buffer_len_;
     std::scoped_lock lock(frame_buffer_mutex_[frame_idx]);
     return frame_buffer_[frame_idx];
 }
@@ -179,10 +186,10 @@ void DXCamera::capture(const Region &region, const int target_fps,
 
     // compute FPS statistics
     const auto capture_duration = duration_cast<std::chrono::seconds>(
-            capture_stop_time - capture_start_time);
+        capture_stop_time - capture_start_time);
     const double fps =
-            static_cast<double>(frame_count) /
-            static_cast<double>(std::chrono::seconds(capture_duration).count());
+        static_cast<double>(frame_count) /
+        static_cast<double>(std::chrono::seconds(capture_duration).count());
     printf("Screen Capture FPS: %lf\n", fps);
 }
 
@@ -201,13 +208,13 @@ void DXCamera::on_output_change() {
 
     rotation_angle_ = output_->get_rotation_angle();
 
-    stagesurf_.rebuild(output_, device_);
-    duplicator_.rebuild(output_, device_);
+    stagesurf_->rebuild(output_, device_);
+    duplicator_->rebuild(output_, device_);
 }
 
 void DXCamera::rebuild_frame_buffer(const Region &region) {
-    auto region_width = region.get_width();
-    auto region_height = region.get_height();
+    const int region_width = region.get_width();
+    const int region_height = region.get_height();
 
     // TODO: Check for locked mutex?
 
@@ -216,7 +223,7 @@ void DXCamera::rebuild_frame_buffer(const Region &region) {
 
         delete[] frame_buffer_;
         frame_buffer_ = new cv::Mat[buffer_len_];
-        for (auto &frame: std::span(frame_buffer_, buffer_len_)) {
+        for (auto &frame : std::span(frame_buffer_, buffer_len_)) {
             frame.create(region_height, region_width, CV_8UC4);
         }
         delete[] frame_buffer_mutex_;

@@ -3,7 +3,6 @@
 
 #include <dxgi.h>
 
-#include <map>
 #include <vector>
 
 #include "core/OutputMetadata.h"

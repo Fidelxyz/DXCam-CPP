@@ -4,6 +4,8 @@
 #define NOMINMAX  // Disable min and max macros in <windows.h>
 
 #include "DXCamera.h"
+#include "core/DeviceInfo.h"
+#include "core/OutputInfo.h"
 
 namespace DXCam {
 
@@ -19,7 +21,7 @@ namespace DXCam {
  * instance will be returned.
  */
 [[maybe_unused]] DXCAM_EXPORT std::shared_ptr<DXCamera> create(
-        int device_idx = 0, int output_idx = -1, size_t max_buffer_len = 64);
+    int device_idx = 0, int output_idx = -1, size_t max_buffer_len = 64);
 
 /**
  * @brief Create a DXCamera instance which captures a rectangle region by
@@ -35,8 +37,8 @@ namespace DXCam {
  * instance will be returned.
  */
 [[maybe_unused]] DXCAM_EXPORT std::shared_ptr<DXCamera> create(
-        const Region &region, int device_idx = 0, int output_idx = -1,
-        size_t max_buffer_len = 64);
+    const Region &region, int device_idx = 0, int output_idx = -1,
+    size_t max_buffer_len = 64);
 
 /**
  * @brief List all devices.
@@ -53,6 +55,5 @@ namespace DXCam {
 get_outputs_info();
 
 }  // namespace DXCam
-
 
 #endif  // DXCAM_CPP_DXCAM_H

@@ -1,12 +1,10 @@
-#include <span>
-
 #include "dxcam/dxcam.h"
 
 // params
 const std::string TITLE = "target_fps";
-const auto REGION = DXCam::Region{0, 0, 1920, 1080};
-const int DURATION = 5;
-const int TARGET_FPS[] = {30, 60, 90, 120, 165};
+constexpr auto REGION = DXCam::Region{0, 0, 1920, 1080};
+constexpr int DURATION = 5;
+constexpr int TARGET_FPS[] = {30, 60, 90, 120, 165};
 
 std::tuple<double, double> bench(const std::shared_ptr<DXCam::DXCamera> &camera,
                                  const int target_fps) {
@@ -23,9 +21,9 @@ std::tuple<double, double> bench(const std::shared_ptr<DXCam::DXCamera> &camera,
 
         const auto current_time = std::chrono::steady_clock::now();
         square_sum += std::pow(
-                std::chrono::duration<double>(current_time - last_frame_time)
-                        .count(),
-                2);
+            std::chrono::duration<double>(current_time - last_frame_time)
+                .count(),
+            2);
         last_frame_time = current_time;
     }
     const auto end_time = std::chrono::steady_clock::now();
@@ -33,7 +31,7 @@ std::tuple<double, double> bench(const std::shared_ptr<DXCam::DXCamera> &camera,
     camera->stop();
 
     const auto duration =
-            std::chrono::duration<double>(end_time - begin_time).count();
+        std::chrono::duration<double>(end_time - begin_time).count();
     const auto fps = total_frames / duration;
 
     const auto std = std::sqrt(square_sum / total_frames -
@@ -51,10 +49,10 @@ int main() {
     std::printf("  Duration: %d s\n", DURATION);
 
     // init
-    auto camera = DXCam::create(REGION);
+    const auto camera = DXCam::create(REGION);
 
     // benchmark
-    for (const auto &target_fps: TARGET_FPS) {
+    for (const auto &target_fps : TARGET_FPS) {
         std::printf("Bench: Target FPS = %d\n", target_fps);
         const auto [fps, std] = bench(camera, target_fps);
         std::printf("Result: Target FPS = %d: %lf FPS, std = %lf\n", target_fps,

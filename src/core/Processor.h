@@ -10,7 +10,7 @@
 namespace DXCam {
 
 class Processor {
-public:
+   public:
     Processor() = default;
 
     static cv::Mat process(const DXGI_MAPPED_RECT &rect, int width, int height,

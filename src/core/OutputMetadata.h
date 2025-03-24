@@ -19,9 +19,9 @@ struct AdapterMetadata {
 };
 
 class OutputMetadata {
-public:
+   public:
     [[nodiscard]] AdapterMetadata get(
-            const std::wstring &adapter_device_name) const;
+        const std::wstring &adapter_device_name) const;
 
     std::vector<AdapterMetadata> adapters;
 };

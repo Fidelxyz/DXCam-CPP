@@ -1,20 +1,21 @@
 #ifndef DXCAM_CPP_DXCAMERA_H
 #define DXCAM_CPP_DXCAMERA_H
 
+#include <atomic>
 #include <opencv2/opencv.hpp>
-#include <thread>
 
-#include "core/Device.h"
-#include "core/Duplicator.h"
-#include "core/Output.h"
 #include "core/Region.h"
-#include "core/StageSurface.h"
 #include "dxcam_export.h"
 
 namespace DXCam {
 
+class Device;
+class Duplicator;
+class Output;
+class StageSurface;
+
 class DXCamera {
-public:
+   public:
     DXCamera(Output *output, Device *device, const Region &region,
              bool region_set_by_user, size_t max_buffer_len = 64);
     DXCAM_EXPORT ~DXCamera();
@@ -136,13 +137,12 @@ public:
      * buffer.
      */
     [[maybe_unused]] DXCAM_EXPORT void get_frame_buffer(
-            const cv::Mat *const **frame_buffer,
-            std::mutex *const **frame_buffer_mutex, const size_t **len,
-            const std::atomic<int> **head, const std::atomic<int> **tail,
-            const std::atomic<bool> **full,
-            std::mutex **frame_buffer_all_mutex);
+        const cv::Mat *const **frame_buffer,
+        std::mutex *const **frame_buffer_mutex, const size_t **len,
+        const std::atomic<int> **head, const std::atomic<int> **tail,
+        const std::atomic<bool> **full, std::mutex **frame_buffer_all_mutex);
 
-private:
+   private:
     void validate_region(const Region &region) const;
 
     void capture(const Region &region, int target_fps = 60,
@@ -162,8 +162,8 @@ private:
 
     Output *output_;
     Device *device_;
-    StageSurface stagesurf_;
-    Duplicator duplicator_;
+    StageSurface *stagesurf_;
+    Duplicator *duplicator_;
 
     std::mutex frame_buffer_all_mutex_;
     std::mutex *frame_buffer_mutex_ = nullptr;

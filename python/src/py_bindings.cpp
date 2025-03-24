@@ -17,20 +17,18 @@ PYBIND11_MODULE(dxcam_cpp, m) {
           py::arg("max_buffer_len") = 64);
 
     py::class_<DXCamera, std::shared_ptr<DXCamera>>(m, "DXCamera")
-            .def("grab", &DXCamera::grab, py::arg("region") = py::none())
-            .def("start", &DXCamera::start, py::arg("region") = py::none(),
-                 py::arg("target_fps") = 60, py::arg("video_mode") = false,
-                 py::arg("delay") = 0)
-            .def("stop", &DXCamera::stop)
-            .def("get_latest_frame", &DXCamera::get_latest_frame)
-            .def("release", &DXCamera::release)
-            .def_property_readonly("width", &DXCamera::get_width)
-            .def_property_readonly("height", &DXCamera::get_height)
-            .def_property_readonly("channel_size", &DXCamera::get_channel_size)
-            .def_property_readonly("rotation_angle",
-                                   &DXCamera::get_rotation_angle)
-            .def_property_readonly("region", &DXCamera::get_region)
-            .def_property_readonly("max_buffer_len",
-                                   &DXCamera::get_max_buffer_len)
-            .def_property_readonly("is_capturing", &DXCamera::is_capturing);
+        .def("grab", &DXCamera::grab, py::arg("region") = py::none())
+        .def("start", &DXCamera::start, py::arg("region") = py::none(),
+             py::arg("target_fps") = 60, py::arg("video_mode") = false,
+             py::arg("delay") = 0)
+        .def("stop", &DXCamera::stop)
+        .def("get_latest_frame", &DXCamera::get_latest_frame)
+        .def("release", &DXCamera::release)
+        .def_property_readonly("width", &DXCamera::get_width)
+        .def_property_readonly("height", &DXCamera::get_height)
+        .def_property_readonly("channel_size", &DXCamera::get_channel_size)
+        .def_property_readonly("rotation_angle", &DXCamera::get_rotation_angle)
+        .def_property_readonly("region", &DXCamera::get_region)
+        .def_property_readonly("max_buffer_len", &DXCamera::get_max_buffer_len)
+        .def_property_readonly("is_capturing", &DXCamera::is_capturing);
 }

@@ -1,3 +1,4 @@
 BasedOnStyle: Google
-TabWidth: 4
+IndentWidth: 4
 UseTab: Never
+AllowShortBlocksOnASingleLine: Always

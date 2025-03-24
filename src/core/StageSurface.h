@@ -10,9 +10,8 @@
 namespace DXCam {
 
 class StageSurface {
-
-public:
-    StageSurface(Output *output, Device *device);
+   public:
+    StageSurface(const Output *output, const Device *device);
     ~StageSurface();
 
     // Disallow copy and move
@@ -21,15 +20,15 @@ public:
     StageSurface(StageSurface &&other) = delete;
     StageSurface &operator=(StageSurface &&other) = delete;
 
-    void rebuild(Output *output, Device *device);
+    void rebuild(const Output *output, const Device *device);
 
     [[nodiscard]] DXGI_MAPPED_RECT map() const;
     void unmap() const;
 
     ID3D11Texture2D *texture = nullptr;
 
-private:
-    void create(Output *output, Device *device);
+   private:
+    void create(const Output *output, const Device *device);
     void release();
 
     LONG width_ = 0;

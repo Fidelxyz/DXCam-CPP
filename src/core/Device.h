@@ -7,12 +7,12 @@
 
 #include <vector>
 
-#include "core/DeviceInfo.h"
+#include "../../include/dxcam/core/DeviceInfo.h"
 
 namespace DXCam {
 
 class Device {
-public:
+   public:
     explicit Device(IDXGIAdapter1 *adapter);
 
     [[nodiscard]] DeviceInfo get_info() const;
