@@ -69,6 +69,7 @@ jobs:
           "-DCMAKE_CXX_COMPILER=cl.exe"
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
+          -DX_VCPKG_APPLOCAL_DEPS_INSTALL:BOOL=ON
 
       - name: Build
         run: cmake --build ${{ github.workspace }}/build --config ${{ matrix.build_type }}
@@ -120,6 +121,7 @@ jobs:
           CMAKE_ARGS: >-
             -DCMAKE_BUILD_PARALLEL_LEVEL=2
             -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
+            -DX_VCPKG_APPLOCAL_DEPS_INSTALL:BOOL=ON
 
       - uses: actions/upload-artifact@v4
         with:
