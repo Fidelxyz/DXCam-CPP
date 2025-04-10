@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 project(DXCam_CPP
-        VERSION 0.2.1
+        VERSION 0.2.2
         LANGUAGES CXX
 )
 
