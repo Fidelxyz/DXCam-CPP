@@ -4,6 +4,8 @@ find_package(Python COMPONENTS Interpreter Development)
 add_subdirectory(pybind11)
 
 pybind11_add_module(dxcam_cpp MODULE
+        src/util/numpy.cpp
+        src/util/numpy.h
         src/util/string_cvt.cpp
         src/util/string_cvt.h
         src/py_bindings.cpp
@@ -11,6 +13,8 @@ pybind11_add_module(dxcam_cpp MODULE
         src/py_dxcam.h
         src/py_DXCamera.cpp
         src/py_DXCamera.h
+        src/py_FrameBuffer.cpp
+        src/py_FrameBuffer.h
 )
 target_link_libraries(dxcam_cpp PRIVATE DXCam)
 add_dependencies(dxcam_cpp DXCam)

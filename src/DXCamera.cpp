@@ -241,13 +241,15 @@ void DXCamera::get_frame_buffer(const cv::Mat *const **frame_buffer,
                                 const std::atomic<int> **tail,
                                 const std::atomic<bool> **full,
                                 std::mutex **frame_buffer_all_mutex) {
-    *frame_buffer = &frame_buffer_;
-    *frame_buffer_mutex = &frame_buffer_mutex_;
-    *len = &buffer_len_;
-    *head = &head_;
-    *tail = &tail_;
-    *full = &full_;
-    *frame_buffer_all_mutex = &frame_buffer_all_mutex_;
+    if (frame_buffer != nullptr) *frame_buffer = &frame_buffer_;
+    if (frame_buffer_mutex != nullptr)
+        *frame_buffer_mutex = &frame_buffer_mutex_;
+    if (len != nullptr) *len = &buffer_len_;
+    if (head != nullptr) *head = &head_;
+    if (tail != nullptr) *tail = &tail_;
+    if (full != nullptr) *full = &full_;
+    if (frame_buffer_all_mutex != nullptr)
+        *frame_buffer_all_mutex = &frame_buffer_all_mutex_;
 }
 
 }  // namespace DXCam

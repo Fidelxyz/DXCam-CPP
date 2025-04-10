@@ -1,5 +1,5 @@
-#ifndef DXCAM_CPP_PY_DXCAMERA_H
-#define DXCAM_CPP_PY_DXCAMERA_H
+#ifndef DXCAM_CPP_PYTHON_PY_DXCAMERA_H
+#define DXCAM_CPP_PYTHON_PY_DXCAMERA_H
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "dxcam/DXCamera.h"
+#include "py_FrameBuffer.h"
 
 namespace py = pybind11;
 
@@ -24,6 +25,7 @@ class DXCamera {
                bool video_mode, int delay) const;
     void stop() const;
     [[nodiscard]] py::array_t<uint8_t> get_latest_frame() const;
+    [[nodiscard]] FrameBuffer frame_buffer() const;
 
     [[nodiscard]] int get_width() const;
     [[nodiscard]] int get_height() const;
@@ -34,12 +36,10 @@ class DXCamera {
     [[nodiscard]] bool is_capturing() const;
 
    private:
-    static py::array_t<uint8_t> numpy_array_from(cv::Mat &&mat);
-
     std::shared_ptr<DXCam::DXCamera> camera_;
     const cv::ColorConversionCodes cvt_color_flag_;
     const static std::unordered_map<std::string, cv::ColorConversionCodes>
         cvt_color_flag_map_;
 };
 
-#endif  // DXCAM_CPP_PY_DXCAMERA_H
+#endif

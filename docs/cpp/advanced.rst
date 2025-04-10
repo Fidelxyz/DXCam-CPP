@@ -84,8 +84,9 @@ Going further than the Python DXcam, you may call
        std::scoped_lock lock(*frame_buffer_all_mutex);
 
        // read the frame buffer in a correct order
-       for (size_t i = 0; i < *len; i++) {
-           cv::Mat frame = (*frame_buffer)[(i + *head) % *len];
+       for (size_t i = *head; i != *tail; i = (i + 1) % *len) {
+           cv::Mat frame = (*frame_buffer)[i];
+
            // Do something with the frame
        }
    }

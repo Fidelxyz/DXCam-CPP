@@ -2,6 +2,8 @@
 
 #include <utility>
 
+#include "util/numpy.h"
+
 const std::unordered_map<std::string, cv::ColorConversionCodes>
     DXCamera::cvt_color_flag_map_ = {
         {"RGB", cv::COLOR_BGRA2RGB},      {"RGBA", cv::COLOR_BGRA2RGBA},
@@ -17,23 +19,6 @@ DXCamera::DXCamera(std::shared_ptr<DXCam::DXCamera> &&camera,
 void DXCamera::release() {
     assert(camera_.use_count() == 1);
     camera_.reset();
-}
-
-py::array_t<uint8_t> DXCamera::numpy_array_from(cv::Mat &&mat) {
-    const auto mat_ = new cv::Mat(std::move(mat));  // ?
-
-    const py::capsule capsule(
-        mat_, [](void *data) { delete static_cast<cv::Mat *>(data); });
-
-    if (mat_->isContinuous()) {
-        return py::array_t<uint8_t>({mat_->rows, mat_->cols, mat_->channels()},
-                                    mat_->data, capsule);
-    } else {
-        return py::array_t<uint8_t>(
-            {mat_->rows, mat_->cols, mat_->channels()},
-            {mat_->step[0], mat_->step[1], static_cast<size_t>(1)}, mat_->data,
-            capsule);
-    }
 }
 
 std::optional<py::array_t<uint8_t>> DXCamera::grab(
@@ -73,6 +58,8 @@ void DXCamera::stop() const { camera_->stop(); }
 py::array_t<uint8_t> DXCamera::get_latest_frame() const {
     return numpy_array_from(camera_->get_latest_frame());
 }
+
+FrameBuffer DXCamera::frame_buffer() const { return FrameBuffer(camera_); };
 
 int DXCamera::get_width() const { return camera_->get_width(); }
 

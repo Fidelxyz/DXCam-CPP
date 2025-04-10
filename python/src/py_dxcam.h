@@ -1,5 +1,5 @@
-#ifndef DXCAM_CPP_PY_DXCAM_H
-#define DXCAM_CPP_PY_DXCAM_H
+#ifndef DXCAM_CPP_PYTHON_PY_DXCAM_H
+#define DXCAM_CPP_PYTHON_PY_DXCAM_H
 
 #include <pybind11/pybind11.h>
 
@@ -15,4 +15,4 @@ std::shared_ptr<DXCamera> create(int device_idx, std::optional<int> output_idx,
                                  const std::string &output_color,
                                  size_t max_buffer_len);
 
-#endif  // DXCAM_CPP_PY_DXCAM_H
+#endif

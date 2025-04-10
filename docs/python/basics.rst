@@ -26,4 +26,18 @@ documentation of DXcam
 
 .. note::
 
-   Working in progress
+Consuming frames from buffer
+============================
+
+DXCam_CPP provides access to the frame buffer via the ``frame_buffer()`` method.
+With the context manager, you can obtain a list of frames.
+
+.. code-block:: python
+
+   camera = dxcam.create(max_buffer_len=16)
+
+   camera.start()
+   with camera.frame_buffer() as buffer:
+       # Do something with the buffer
+       pass
+   camera.stop()

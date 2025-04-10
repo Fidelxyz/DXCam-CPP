@@ -30,6 +30,9 @@ class CMakeExtension(Extension):
 
 class CMakeBuild(build_ext):
     def build_extension(self, ext: CMakeExtension) -> None:
+        print()
+        print("Setup build...")
+
         # Must be in this form due to bug in .resolve() only fixed in Python 3.10+
         ext_fullpath = Path.cwd() / self.get_ext_fullpath(ext.name)
         extdir = ext_fullpath.parent.resolve()
@@ -105,17 +108,26 @@ class CMakeBuild(build_ext):
         print("CMake args:", cmake_args)
         print("Build args:", build_args)
         print("Install args:", install_args)
+        print()
 
+        print("Configuring CMake...")
         subprocess.run(
             ["cmake", ext.sourcedir, *cmake_args], cwd=build_temp, check=True
         )
+        print()
+
+        print("Building...")
         subprocess.run(
             ["cmake", "--build", ".", *build_args], cwd=build_temp, check=True
         )
+        print()
+
+        print("Installing...")
         subprocess.run(
             ["cmake", "--install", ".", *install_args], cwd=build_temp,
             check=True
         )
+        print()
 
         # Generate stubs
         sys.path.insert(0, str(extdir / ext.name))
