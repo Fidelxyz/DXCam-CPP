@@ -19,11 +19,11 @@ DXCamera::DXCamera(Output *const output, Device *const device,
                    const size_t max_buffer_len)
     : region_(region),
       region_set_by_user_(region_set_by_user),
-      buffer_len_(max_buffer_len),
       output_(output),
       device_(device),
       stagesurf_(new StageSurface(output, device)),
-      duplicator_(new Duplicator(output, device)) {
+      duplicator_(new Duplicator(output, device)),
+      buffer_len_(max_buffer_len) {
     output_->get_resolution(&width_, &height_);
     validate_region(region_);
 

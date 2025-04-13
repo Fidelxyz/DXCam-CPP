@@ -157,7 +157,6 @@ class DXCamera {
     int rotation_angle_;
     Region region_;
     bool region_set_by_user_;
-    size_t buffer_len_;
     bool is_capturing_ = false;
 
     Output *output_;
@@ -165,16 +164,17 @@ class DXCamera {
     StageSurface *stagesurf_;
     Duplicator *duplicator_;
 
+    const size_t buffer_len_;
     std::mutex frame_buffer_all_mutex_;
     std::mutex *frame_buffer_mutex_ = nullptr;
-    std::atomic<bool> frame_available_ = false;
     cv::Mat *frame_buffer_ = nullptr;
-    std::atomic<int> head_ = 0;
-    std::atomic<int> tail_ = 0;
-    std::atomic<bool> full_ = false;
+    std::atomic_int head_ = 0;
+    std::atomic_int tail_ = 0;
+    std::atomic_bool full_ = false;
+    std::atomic_bool frame_available_ = false;
 
     std::thread thread;
-    std::atomic<bool> stop_capture = false;
+    std::atomic_bool stop_capture = false;
 };
 
 }  // namespace DXCam

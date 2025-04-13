@@ -43,6 +43,7 @@ else ()
     add_compile_options(/O2 /GL)
     add_link_options(/LTCG)
 endif ()
+add_compile_options(/W4)
 
 find_package(OpenCV REQUIRED core imgcodecs)
 

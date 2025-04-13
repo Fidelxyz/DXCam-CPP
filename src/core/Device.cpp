@@ -13,10 +13,11 @@ Device::Device(IDXGIAdapter1 *const adapter) : adapter(adapter), desc() {
         D3D_FEATURE_LEVEL_10_1,
         D3D_FEATURE_LEVEL_10_0,
     };
+    constexpr size_t feature_levels_len = std::size(feature_levels);
 
     hr = D3D11CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, 0,
-                           feature_levels, std::size(feature_levels), 7,
-                           &device, nullptr, &context);
+                           feature_levels, feature_levels_len, 7, &device,
+                           nullptr, &context);
     assert(SUCCEEDED(hr));
     device->GetImmediateContext(&im_context);
 }
@@ -24,7 +25,7 @@ Device::Device(IDXGIAdapter1 *const adapter) : adapter(adapter), desc() {
 std::vector<IDXGIOutput1 *> Device::enum_outputs() const {
     std::vector<IDXGIOutput1 *> p_outputs;
     IDXGIOutput1 *p_output;
-    for (size_t i = 0;
+    for (UINT i = 0;
          adapter->EnumOutputs(i, reinterpret_cast<IDXGIOutput **>(&p_output)) !=
          DXGI_ERROR_NOT_FOUND;
          i++) {
