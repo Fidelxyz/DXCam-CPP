@@ -56,7 +56,13 @@ void DXCamera::start(const std::optional<py::tuple> &region,
 void DXCamera::stop() const { camera_->stop(); }
 
 py::array_t<uint8_t> DXCamera::get_latest_frame() const {
-    return numpy_array_from(camera_->get_latest_frame());
+    cv::Mat frame = camera_->get_latest_frame();
+
+    if (cvt_color_flag_ != cv::COLOR_COLORCVT_MAX) {
+        cv::cvtColor(frame, frame, cvt_color_flag_);
+    }
+
+    return numpy_array_from(std::move(frame));
 }
 
 FrameBuffer DXCamera::frame_buffer() const { return FrameBuffer(camera_); };
