@@ -120,7 +120,7 @@ cv::Mat DXCamera::get_latest_frame() {
     frame_available_.wait(false);
     frame_available_ = false;
 
-    const size_t frame_idx = (head_ - 1 + buffer_len_) % buffer_len_;
+    const size_t frame_idx = (tail_ - 1 + buffer_len_) % buffer_len_;
     std::scoped_lock lock(frame_buffer_mutex_[frame_idx]);
     return frame_buffer_[frame_idx];
 }
@@ -167,7 +167,7 @@ void DXCamera::capture(const Region &region, const int target_fps,
             // This should be done before moving the tail pointer;
             // otherwise, if the tail pointer is moved but the full flag is not
             // updated, the user will get an empty frame buffer.
-            full_ = tail_ + 1 == head_;
+            full_ = (tail_ + 1) % static_cast<int>(buffer_len_) == head_;
             // Move the tail pointer.
             // This should be done after all the other operations are finished.
             // In this case, the new frame is ready to be included in the
