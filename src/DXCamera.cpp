@@ -117,6 +117,8 @@ void DXCamera::stop() {
 }
 
 cv::Mat DXCamera::get_latest_frame() {
+    if (!is_capturing_) throw std::runtime_error("Camera is not capturing");
+
     frame_available_.wait(false);
     frame_available_ = false;
 
