@@ -57,9 +57,9 @@ cv::Mat Processor::process(const DXGI_MAPPED_RECT &rect, int width, int height,
     }
 
     // Crop
-    if (region.right - region.left != width) {
+    if (image.cols != width) {
         image = image.colRange(region.left, region.right);
-    } else if (region.bottom - region.top != height) {
+    } else if (image.rows != height) {
         image = image.rowRange(region.top, region.bottom);
     }
 
