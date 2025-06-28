@@ -34,8 +34,10 @@ cv::Mat Processor::process(const DXGI_MAPPED_RECT &rect, int width, int height,
     cv::Mat image;
     if (rotation_angle == 0 || rotation_angle == 180) {
         image = cv::Mat(height, pitch, CV_8UC4, rect.pBits + offset);
+        if (pitch != width) { image = image.colRange(0, width); }
     } else {
         image = cv::Mat(width, pitch, CV_8UC4, rect.pBits + offset);
+        if (pitch != height) { image = image.colRange(0, height); }
     }
 
     // Rotation
@@ -57,9 +59,9 @@ cv::Mat Processor::process(const DXGI_MAPPED_RECT &rect, int width, int height,
     }
 
     // Crop
-    if (image.cols != width) {
+    if (region.right - region.left != width) {
         image = image.colRange(region.left, region.right);
-    } else if (image.rows != height) {
+    } else if (region.bottom - region.top != height) {
         image = image.rowRange(region.top, region.bottom);
     }
 
