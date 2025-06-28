@@ -19,7 +19,6 @@ license = { file = "LICENSE" }
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: C++",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: Microsoft :: Windows :: Windows 10",
     "Operating System :: Microsoft :: Windows :: Windows 11",
