@@ -146,7 +146,7 @@ class DXCamera {
     void validate_region(const Region &region) const;
 
     void capture(const Region &region, int target_fps = 60,
-                 bool video_mode = false);
+                 bool video_mode = false) noexcept;
 
     void on_output_change();
 

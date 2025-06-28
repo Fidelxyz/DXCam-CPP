@@ -1,6 +1,5 @@
 #include "DXCamera.h"
 
-#include <cstdio>
 #include <format>
 #include <span>
 #include <stdexcept>
@@ -87,6 +86,10 @@ void DXCamera::start(const int target_fps, const bool video_mode,
 
 void DXCamera::start(const Region &region, const int target_fps,
                      const bool video_mode, const int delay) {
+    if (target_fps <= 0) {
+        throw std::invalid_argument("Target FPS should be greater than 0");
+    }
+
     if (is_capturing_) { stop(); }
 
     if (delay != 0) {
@@ -128,11 +131,7 @@ cv::Mat DXCamera::get_latest_frame() {
 }
 
 void DXCamera::capture(const Region &region, const int target_fps,
-                       const bool video_mode) {
-    if (target_fps <= 0) {
-        throw std::invalid_argument("Target FPS should be greater than 0");
-    }
-
+                       const bool video_mode) noexcept {
     const HighResTimer timer(static_cast<int>(1000.0 / target_fps));
 
     // for FPS statistics
@@ -142,7 +141,13 @@ void DXCamera::capture(const Region &region, const int target_fps,
     while (!stop_capture) {
         timer.wait();
 
-        auto frame = grab(region);
+        cv::Mat frame;
+        try {
+            frame = grab(region);
+        } catch (const std::exception &e) {
+            std::cerr << e.what() << std::endl;
+            continue;
+        }
 
         if (video_mode || !frame.empty()) {
             std::scoped_lock lock_all(frame_buffer_all_mutex_);

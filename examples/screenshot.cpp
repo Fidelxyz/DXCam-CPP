@@ -22,6 +22,11 @@ int main() {
 
     while (true) {
         auto frame = camera->grab();
+        if (frame.empty()) {
+            std::cerr << "Failed to grab frame." << std::endl;
+            continue;
+        }
+
         cv::imshow("frame", frame);
         if (cv::waitKey(0) == 27) {  // ESC
             break;
