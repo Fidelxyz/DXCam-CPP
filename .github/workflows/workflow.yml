@@ -27,7 +27,10 @@ on:
 
 env:
   PROJECT_NAME: "DXCam_CPP"
-  VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+  USERNAME: ${{ github.repository_owner }}
+  VCPKG_EXE: ${{ github.workspace }}/vcpkg/vcpkg
+  FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+  VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json,readwrite"
 
 jobs:
   build:
