@@ -32,7 +32,6 @@ set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR})
 if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     message(FATAL_ERROR "DXCam_CPP requires MSVC")
 endif ()
-message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 message(STATUS "Configuring DXCam_CPP")
 
@@ -49,32 +48,18 @@ find_package(OpenCV REQUIRED core imgcodecs)
 
 # DXCam
 add_library(DXCam
-        ${PROJECT_BINARY_DIR}/exports/dxcam_export.h
-        include/dxcam/core/DeviceInfo.h
-        include/dxcam/core/OutputInfo.h
-        include/dxcam/core/Region.h
-        include/dxcam/dxcam.h
-        include/dxcam/DXCamera.h
         src/core/Device.cpp
-        src/core/Device.h
         src/core/Duplicator.cpp
-        src/core/Duplicator.h
         src/core/Output.cpp
-        src/core/Output.h
         src/core/OutputMetadata.cpp
-        src/core/OutputMetadata.h
         src/core/Processor.cpp
-        src/core/Processor.h
         src/core/Region.cpp
         src/core/StageSurface.cpp
-        src/core/StageSurface.h
         src/util/HighResTimer.cpp
         src/util/io.cpp
-        src/util/io.h
         src/dxcam.cpp
         src/DXCamera.cpp
         src/DXFactory.cpp
-        src/DXFactory.h
 )
 target_include_directories(DXCam
         PRIVATE
