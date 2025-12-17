@@ -104,10 +104,10 @@ jobs:
           -DX_VCPKG_APPLOCAL_DEPS_INSTALL:BOOL="ON"
 
       - name: Build
-        run: cmake --build "${{ github.workspace }}/build" --config Release
+        run: cmake --build "${{ github.workspace }}/build"
 
       - name: Install
-        run: cmake --install ${{ github.workspace }}/build --config Release
+        run: cmake --install "${{ github.workspace }}/build"
 
       - uses: actions/upload-artifact@v5
         with:

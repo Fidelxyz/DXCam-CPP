@@ -39,9 +39,9 @@ Contributions are welcome!
 ### Build for C++ Library
 
 ```powershell
-cmake -B ./build -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
-cmake --build ./build --config Release
-cmake --install ./build --config Release --prefix ./build/install
+cmake -B ./build --preset release
+cmake --build ./build
+cmake --install ./build --prefix ./build/install
 ```
 
 ### Build for Python Package

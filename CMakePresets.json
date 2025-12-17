@@ -1,0 +1,63 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "debug",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "BUILD_PYTHON": {
+          "type": "BOOL",
+          "value": true
+        },
+        "BUILD_EXAMPLES": {
+          "type": "BOOL",
+          "value": true
+        },
+        "BUILD_BENCHMARKS": {
+          "type": "BOOL",
+          "value": true
+        },
+        "X_VCPKG_APPLOCAL_DEPS_INSTALL": {
+          "type": "BOOL",
+          "value": true
+        }
+      },
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "Visual Studio"
+        }
+      }
+    },
+    {
+      "name": "release",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "BUILD_PYTHON": {
+          "type": "BOOL",
+          "value": true
+        },
+        "BUILD_EXAMPLES": {
+          "type": "BOOL",
+          "value": true
+        },
+        "BUILD_BENCHMARKS": {
+          "type": "BOOL",
+          "value": true
+        },
+        "X_VCPKG_APPLOCAL_DEPS_INSTALL": {
+          "type": "BOOL",
+          "value": true
+        }
+      },
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "Visual Studio"
+        }
+      }
+    }
+  ]
+}
