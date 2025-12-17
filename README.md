@@ -48,7 +48,6 @@ cmake --install ./build --prefix ./build/install
 
 ```powershell
 $env:CMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
-cd python
 pip install .
 ```
 

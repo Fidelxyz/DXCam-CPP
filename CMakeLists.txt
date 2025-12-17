@@ -37,7 +37,7 @@ message(STATUS "Configuring DXCam_CPP")
 
 # Set compiler options
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_compile_options(/Od /fsanitize=address /Zi)
+    add_compile_options(/Od /Zi)
 else ()
     add_compile_options(/O2 /GL)
     add_link_options(/LTCG)

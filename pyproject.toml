@@ -31,9 +31,11 @@ Issues = "https://github.com/Fidelxyz/DXCam-CPP/issues"
 
 [tool.scikit-build]
 minimum-version = "build-system.requires"
+wheel.packages = ["python/src/dxcam_cpp"]
 
 [tool.scikit-build.cmake.define]
 CMAKE_TOOLCHAIN_FILE = { env = "CMAKE_TOOLCHAIN_FILE" }
+X_VCPKG_APPLOCAL_DEPS_INSTALL = true
 BUILD_PYTHON = true
 INSTALL_PYTHON_ONLY = true
 
