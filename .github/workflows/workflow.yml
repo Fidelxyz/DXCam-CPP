@@ -35,7 +35,7 @@ env:
   VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json,readwrite"
 
 jobs:
-  build:
+  prebuild-vcpkg:
     runs-on: windows-latest
 
     steps:
@@ -43,7 +43,39 @@ jobs:
         with:
           submodules: true
 
-      - name: Enable Developer Command Prompt
+      - name: Setup Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Add NuGet sources
+        shell: pwsh
+        run: |
+          .$(."${{ env.VCPKG_ROOT }}/vcpkg" fetch nuget) `
+            sources add `
+            -Source "${{ env.FEED_URL }}" `
+            -StorePasswordInClearText `
+            -Name GitHubPackages `
+            -UserName "${{ env.USERNAME }}" `
+            -Password "${{ secrets.GITHUB_TOKEN }}"
+          .$(."${{ env.VCPKG_ROOT }}/vcpkg" fetch nuget) `
+            setapikey "${{ secrets.GITHUB_TOKEN }}" `
+            -Source "${{ env.FEED_URL }}"
+
+      - name: Configure vcpkg
+        run: ."${{ env.VCPKG_ROOT }}/vcpkg" integrate install
+
+      - name: Install vcpkg dependencies
+        run: ."${{ env.VCPKG_ROOT }}/vcpkg" install
+
+  build:
+    runs-on: windows-latest
+    needs: [ prebuild-vcpkg ]
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+
+      - name: Setup Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Add NuGet sources
@@ -79,18 +111,19 @@ jobs:
 
       - uses: actions/upload-artifact@v5
         with:
-          name: ${{ env.PROJECT_NAME }}
+          name: ${{ env.PROJECT_NAME }}-win_amd64
           path: ${{ github.workspace }}/build/install
 
   build-wheels:
     runs-on: windows-latest
+    needs: [ prebuild-vcpkg ]
 
     steps:
       - uses: actions/checkout@v5
         with:
           submodules: true
 
-      - name: Enable Developer Command Prompt
+      - name: Setup Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Add NuGet sources
@@ -117,7 +150,7 @@ jobs:
 
       - uses: actions/upload-artifact@v5
         with:
-          name: ${{ env.PROJECT_NAME }}-wheels-python${{ matrix.python-version }}
+          name: ${{ env.PROJECT_NAME }}-wheels-win_amd64
           path: ${{ github.workspace }}/wheelhouse/*.whl
 
   upload_pypi:
