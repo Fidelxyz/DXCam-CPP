@@ -25,111 +25,100 @@ on:
         type: boolean
         default: false
 
+permissions:
+  packages: write
+
 env:
-  PROJECT_NAME: "DXCam_CPP"
+  PROJECT_NAME: "dxcam_cpp"
   USERNAME: ${{ github.repository_owner }}
-  VCPKG_EXE: ${{ github.workspace }}/vcpkg/vcpkg
   FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
   VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json,readwrite"
 
 jobs:
   build:
-    strategy:
-      matrix:
-        build_type: [ "Debug", "Release", "RelWithDebInfo" ]
-
     runs-on: windows-latest
 
     steps:
-      - name: Export GitHub Actions cache environment variables
-        uses: actions/github-script@v7
-        with:
-          script: |
-            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
-
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: true
 
-      - name: Setup Vcpkg
-        run: |
-          git clone https://github.com/microsoft/vcpkg.git 
-          .\vcpkg\bootstrap-vcpkg.bat
-
-      - name: Setup Ninja
-        run: choco install ninja -y
-
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Add NuGet sources
+        shell: pwsh
+        run: |
+          .$(."${{ env.VCPKG_ROOT }}/vcpkg" fetch nuget) `
+            sources add `
+            -Source "${{ env.FEED_URL }}" `
+            -StorePasswordInClearText `
+            -Name GitHubPackages `
+            -UserName "${{ env.USERNAME }}" `
+            -Password "${{ secrets.GITHUB_TOKEN }}"
+          .$(."${{ env.VCPKG_ROOT }}/vcpkg" fetch nuget) `
+            setapikey "${{ secrets.GITHUB_TOKEN }}" `
+            -Source "${{ env.FEED_URL }}"
 
       - name: Configure CMake
         run: >-
           cmake
           -B ${{ github.workspace }}/build
           -G Ninja
-          "-DCMAKE_C_COMPILER=cl.exe"
-          "-DCMAKE_CXX_COMPILER=cl.exe"
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
-          -DX_VCPKG_APPLOCAL_DEPS_INSTALL:BOOL=ON
+          -DCMAKE_C_COMPILER="cl.exe"
+          -DCMAKE_CXX_COMPILER="cl.exe"
+          -DCMAKE_BUILD_TYPE="Release"
+          -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
+          -DX_VCPKG_APPLOCAL_DEPS_INSTALL:BOOL="ON"
 
       - name: Build
-        run: cmake --build ${{ github.workspace }}/build --config ${{ matrix.build_type }}
+        run: cmake --build "${{ github.workspace }}/build" --config Release
 
       - name: Install
-        run: cmake --install ${{ github.workspace }}/build --config ${{ matrix.build_type }}
+        run: cmake --install ${{ github.workspace }}/build --config Release
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
-          name: ${{ env.PROJECT_NAME }}-${{ matrix.build_type }}
+          name: ${{ env.PROJECT_NAME }}
           path: ${{ github.workspace }}/build/install
 
   build-wheels:
-    strategy:
-      matrix:
-        python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13" ]
-
     runs-on: windows-latest
 
     steps:
-      - name: Export GitHub Actions cache environment variables
-        uses: actions/github-script@v7
-        with:
-          script: |
-            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
-
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: true
 
-      - name: Setup Vcpkg
+      - name: Enable Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Add NuGet sources
+        shell: pwsh
         run: |
-          git clone https://github.com/microsoft/vcpkg.git 
-          .\vcpkg\bootstrap-vcpkg.bat
+          .$(."${{ env.VCPKG_ROOT }}/vcpkg" fetch nuget) `
+            sources add `
+            -Source "${{ env.FEED_URL }}" `
+            -StorePasswordInClearText `
+            -Name GitHubPackages `
+            -UserName "${{ env.USERNAME }}" `
+            -Password "${{ secrets.GITHUB_TOKEN }}"
+          .$(."${{ env.VCPKG_ROOT }}/vcpkg" fetch nuget) `
+            setapikey "${{ secrets.GITHUB_TOKEN }}" `
+            -Source "${{ env.FEED_URL }}"
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: 'pip'
+      - uses: astral-sh/setup-uv@v7
 
-      - name: Install build tools
-        run: pip install --upgrade setuptools wheel
-
-      - name: Build Python Wheel
-        run: pip wheel ${{ github.workspace }} --no-deps --wheel-dir=${{ github.workspace }}/dist
+      - name: Build Python wheel
+        uses: pypa/cibuildwheel@v3.3
         env:
-          CMAKE_ARGS: >-
-            -DCMAKE_BUILD_PARALLEL_LEVEL=2
-            -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
-            -DX_VCPKG_APPLOCAL_DEPS_INSTALL:BOOL=ON
+          CMAKE_TOOLCHAIN_FILE: ${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake
+          CMAKE_GENERATOR: Ninja
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: ${{ env.PROJECT_NAME }}-wheels-python${{ matrix.python-version }}
-          path: ${{ github.workspace }}/dist/*.whl
+          path: ${{ github.workspace }}/wheelhouse/*.whl
 
   upload_pypi:
     needs: [ build-wheels ]
@@ -140,7 +129,7 @@ jobs:
     if: (github.event_name == 'release' && github.event.action == 'published') || github.event.inputs.publish == 'true'
 
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         with:
           pattern: ${{ env.PROJECT_NAME }}-wheels-*
           path: dist

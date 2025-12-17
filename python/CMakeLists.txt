@@ -1,7 +1,7 @@
 message(STATUS "Configuring DXCam-CPP-Python")
 
 find_package(Python COMPONENTS Interpreter Development)
-add_subdirectory(pybind11)
+find_package(pybind11 CONFIG REQUIRED)
 
 pybind11_add_module(dxcam_cpp MODULE
         src/util/numpy.cpp
