@@ -1,26 +1,30 @@
 # DXCam-CPP
 
 A high performance screen capturing library for Windows
-rewriting [DXcam](https://github.com/ra1nty/DXcam) in C++.
-
-[Documentation](https://dxcam-cpp.readthedocs.io/)
+porting [DXcam](https://github.com/ra1nty/DXcam) to C++.
 
 [![PyPI - Version](https://img.shields.io/pypi/v/dxcam-cpp)](https://pypi.org/project/dxcam-cpp/)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/dxcam-cpp)](https://pypi.org/project/dxcam-cpp/)
+![Vcpkg Version](https://img.shields.io/vcpkg/v/dxcam-cpp)
 [![CI](https://github.com/Fidelxyz/DXCam-CPP/actions/workflows/workflow.yml/badge.svg)](https://github.com/Fidelxyz/DXCam-CPP/actions/workflows/workflow.yml)
 [![GitHub License](https://img.shields.io/github/license/Fidelxyz/DXCam-CPP)](https://github.com/Fidelxyz/DXCam-CPP/blob/main/LICENSE)
 
-## Features
+## Usage
 
-- C++ Dynamic Library
-- Python Module (Compatible with the original
-  Python [DXcam](https://github.com/ra1nty/DXcam) as an alternative)
+See the [**documentation**](https://dxcam-cpp.readthedocs.io/) for detailed
+usage.
 
-### Roadmap
+### C++ Library
 
-- Benchmark comparing with other libs
+DXCam-CPP is available on [vcpkg](https://github.com/microsoft/vcpkg).
 
-Contributions are welcome!
+Pre-built binaries are also available
+on the [Releases](https://github.com/Fidelxyz/DXCam-CPP/releases) page.
+
+### Python Module
+
+The interface of the Python module of DXCam-CPP is designed to be **fully
+compatible** with the original [DXcam](https://github.com/ra1nty/DXcam) as an
+alternative.
 
 ## Build
 
@@ -29,6 +33,10 @@ Contributions are welcome!
 - CMake
 - Visual Studio 2022
 - [OpenCV](https://github.com/opencv/opencv)
+
+#### For Python Bindings
+
+- [pybind11](https://github.com/pybind/pybind11)
 
 #### For Documentation
 
@@ -50,11 +58,3 @@ cmake --install ./build --prefix ./build/install
 $env:CMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
 pip install .
 ```
-
-## Benchmarks
-
-> Benchmark is not available currently, due to some unresolved issues.
-
-_Data obtained from running on my Laptop (i7-11800H & RTX 3060 Laptop)
-with [**UFO Test**](https://www.testufo.com/), which a capturing region of
-1920x1080._

@@ -4,6 +4,8 @@ Basics
 Installation
 ============
 
+DXCam_CPP is available on `PyPI <https://pypi.org/>`_. You can install it via pip:
+
 .. code-block:: shell
 
    pip install dxcam_cpp
@@ -11,7 +13,7 @@ Installation
 Usage
 =====
 
-The interface of the Python module of DXCam_CPP is designed to be **fully
+The interface of the Python module of DXCam-CPP is designed to be **fully
 compatible** with the original Python DXcam as an alternative.
 
 Therefore, you can simply import this module and use it as DXcam:

@@ -1,14 +1,13 @@
-Basics
-######
+Quick Start
+###########
 
-If you are using CMake, you can use ``find_package`` to include DXCam_CPP in
+If you are using CMake, you can use ``find_package`` to include DXCam-CPP in
 your project:
 
 .. code-block:: cmake
 
-   find_package(DXCam REQUIRED)
-   target_include_directories(... PRIVATE ${DXCam_INCLUDE_DIRS})
-   target_link_libraries(... PRIVATE ${DXCam_LIBS})
+   find_package(DXCam CONFIG REQUIRED)
+   target_link_libraries(... PRIVATE DXCam::DXCam)
 
 Include ``dxcam.h`` in your project:
 
@@ -16,10 +15,7 @@ Include ``dxcam.h`` in your project:
 
    #include <dxcam/dxcam.h>
 
-`OpenCV <https://github.com/opencv/opencv>`_ is automatically included, since
-the screenshot is returned as a ``cv::Mat`` object.
-
-Everything provided by DXCam_CPP is in the ``DXCam::`` namespace.
+Everything provided by DXCam-CPP is in the ``DXCam::`` namespace.
 
 Most of the usage is the same as the original Python DXCam, **but the full
 consistency the interface of C++ library with the original Python version is not
